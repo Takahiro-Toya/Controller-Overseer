@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+#define ARRAY_SIZE 30
+
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
 #define RETURNED_ERROR -1
@@ -79,17 +81,6 @@ int main(int argc, char *argv[])
                inet_ntoa(their_addr.sin_addr));
         if (!fork())
         { /* this is the child process */
-
-            /* Call method to recieve array data */
-            int *results = Receive_Array_Int_Data(new_fd, ARRAY_SIZE);
-
-            /* Print out the array results sent by client */
-            for (i = 0; i < ARRAY_SIZE; i++)
-            {
-                printf("Value of index[%d] = %d\n", i, results[i]);
-            }
-
-            free(results);
 
             if (send(new_fd, "All of array data received by server\n", 40, 0) == -1)
                 perror("send");

@@ -9,20 +9,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "usage.h"
+
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
 #define ARRAY_SIZE 30
-
-typedef struct
-{
-    char *logfile;
-    char *outfile;
-    int seconds;
-    char *filename;
-    char *fileargs;
-    int mem;
-    int memkill;
-} options;
 
 int main(int argc, char *argv[])
 {
@@ -30,65 +21,17 @@ int main(int argc, char *argv[])
     char buf[MAXDATASIZE];
     struct hostent *he;
     struct sockaddr_in their_addr; /* connector's address information */
-    options *op = malloc(sizeof(options));
 
-    if (argc < 3)
-    {
-        fprintf(stderr, "usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+    
+    options_t options = getControllerInitCommand(argc, argv);
+    if (options.success == -1) {
+        fprintf(stderr, "*** Args error ***\n");
         exit(1);
-    }
-
-    if (strcmp(argv[3], 'mem') == 0) {
-        if (argc < 4) {
-            printf("mem option without pid\n");
-            exit(1);
-        } else {
-            printf("mem option with [pid] = %d\n", atoi(argv[4]));
-            exit(1);
-        }
-    } else if (strcmp(argv[3], 'memkill') == 0) {
-        if (argv < 4) {
-            fprintf(stderr, "usage: memkill <percent>\n");
-            eixt(1);
-        } else {
-            printf("memkill option with <percent> = %d\n", atoi(argv[4]));
-            exit(1);
-        }
     } else {
-        int i = 3;
-        while (i < argc)
-        {
-            if (strcmp(argv[i], '-o') == 0 ) {
-                if (argc > i) {
-                    op->outfile = argv[i + 1];
-                    i += 2;
-                } else {
-                    fprintf(stderr, "usage: [-o out_file]\n");
-                    exit(1);
-                }
-            } else if (strcmp(argv[i], '-log') == 0) {
-                if (argc > i) {
-                    op->logfile = argv[i + 1];
-                } else {
-                    fprintf(stderr, "usage: [-log log_file]\n");
-                    exit(1);
-                }
-            } else if (strcmp(argv[i], '-t') == 0 && argc > i) {
-                if (argc > i) {
-                    op->seconds = atoi(argv[i + 1]);
-                } else {
-                    fprintf(stderr, "usage: [-t seconds]\n");
-                    exit(1);
-                }
-            } else {
-                op->filename = argv[i];
-                if (argc > i) {
-                    for (int j = i; j < argc)
-                }
-            }
-        }
+        printf("log: %s, out: %s, seconds: %d, file: %s, fileargs: %s, mem: %d, memkill: %d\n",
+            options.logfile, options.outfile, options.seconds, options.fileargs, options.fileargs, options.mem, options.memkill
+        );
     }
-
     if ((he = gethostbyname(argv[1])) == NULL)
     { /* get the host info */
         herror("gethostbyname");
@@ -100,6 +43,7 @@ int main(int argc, char *argv[])
         perror("socket");
         exit(1);
     }
+
 
     /* clear address struct */
     memset(&their_addr, 0, sizeof(their_addr));
@@ -114,15 +58,6 @@ int main(int argc, char *argv[])
         perror("connect");
         exit(1);
     }
-
-    /* Create an array of squares of first 30 whole numbers */
-    int simpleArray[ARRAY_SIZE] = {0};
-    for (i = 0; i < ARRAY_SIZE; i++)
-    {
-        simpleArray[i] = i * i;
-    }
-
-    Send_Array_Data(sockfd, simpleArray);
 
     /* Receive message back from server */
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
