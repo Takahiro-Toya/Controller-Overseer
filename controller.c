@@ -15,21 +15,22 @@
 
 #define ARRAY_SIZE 30
 
+// void sendExecArguments(char *[fil])
+
 int main(int argc, char *argv[])
 {
     int sockfd, numbytes, i = 0;
     char buf[MAXDATASIZE];
     struct hostent *he;
     struct sockaddr_in their_addr; /* connector's address information */
-
     
     options_t options = getControllerInitCommand(argc, argv);
     if (options.success == -1) {
         fprintf(stderr, "*** Args error ***\n");
         exit(1);
     } else {
-        printf("log: %s, out: %s, seconds: %d, file: %s, fileargs: %s, mem: %d, memkill: %d\n",
-            options.logfile, options.outfile, options.seconds, options.fileargs, options.fileargs, options.mem, options.memkill
+        printf("log: %s, out: %s, seconds: %d, file: %s, fileargs: %d, mem: %d, memkill: %d\n",
+            options.logfile, options.outfile, options.seconds, options.filename, options.fileargscount, options.mem, options.memkill
         );
     }
     if ((he = gethostbyname(argv[1])) == NULL)
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     if (connect(sockfd, (struct sockaddr *)&their_addr,
                 sizeof(struct sockaddr)) == -1)
     {
-        perror("connect");
+        fprintf(stderr, "Could not connect to overseer at %s %s\n", argv[1], argv[2]);
         exit(1);
     }
 

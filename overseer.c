@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
 
 #define ARRAY_SIZE 30
 
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("server starts listnening ...\n");
+    printf("overseer starts listnening ...\n");
 
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
@@ -77,8 +78,10 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        printf("server: got connection from %s\n",
-               inet_ntoa(their_addr.sin_addr));
+        time_t t = time(NULL);
+        struct tm *local = localtime(&t);
+        printf("%d-%d-%d %d:%d:%d - connection received from %s\n", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec, inet_ntoa(their_addr.sin_addr));
+
         if (!fork())
         { /* this is the child process */
 

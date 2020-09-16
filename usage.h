@@ -7,19 +7,27 @@
 
 typedef struct
 {
-    int success;
+    int success, seconds, fileargscount, mem, memkill;
     char *logfile;
     char *outfile;
-    int seconds;
     char *filename;
-    char *fileargs;
-    int mem;
-    int memkill;
+    char **fileargs;
 } options_t;
 
 options_t getControllerInitCommand(int argc, char *argv[])
 {
-    options_t op = {1, NULL, NULL, -1, NULL, NULL, -1, -1};
+    // options_t *op = malloc(sizeof(options_t));
+    // op->success = 0;
+    // op->seconds = -1;
+    // op->fileargscount = 0;
+    // op->mem = -1;
+    // op->memkill = -1;
+    // op->logfile = NULL;
+    // op->outfile = NULL;
+    // op->fileargs = NULL;
+    // op->filename = NULL;
+
+    options_t op = {1, -1, 0, -1, -1, NULL, NULL, NULL, NULL};
 
     // needs at least 4 arguments include the first ./controller
     if (argc < 4)
@@ -60,11 +68,12 @@ options_t getControllerInitCommand(int argc, char *argv[])
         int i = 3;
         while (i < argc)
         {
-            if (strcmp(argv[i], "-o") == 0)
+            if (strcmp(argv[i], "-o") == 0 && i % 2 != 0)
             {
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
+                    op.outfile = (char *)malloc(strlen(argv[i + 1]) + 1);
                     op.outfile = argv[i + 1];
                     i += 2;
                 }
@@ -75,11 +84,12 @@ options_t getControllerInitCommand(int argc, char *argv[])
                     break;
                 }
             }
-            else if (strcmp(argv[i], "-log") == 0)
+            else if (strcmp(argv[i], "-log") == 0 && i % 2 != 0)
             {
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
+                    op.logfile = (char *)malloc(strlen(argv[i + 1]) + 1);
                     op.logfile = argv[i + 1];
                     i += 2;
                 }
@@ -90,12 +100,12 @@ options_t getControllerInitCommand(int argc, char *argv[])
                     break;
                 }
             }
-            else if (strcmp(argv[i], "-t") == 0 && argc > i)
+            else if (strcmp(argv[i], "-t") == 0 && i % 2 != 0)
             {
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
-                    op.outfile = argv[i + 1];
+                    op.seconds = atoi(argv[i+1]);
                     i += 2;
                 }
                 else
@@ -108,15 +118,21 @@ options_t getControllerInitCommand(int argc, char *argv[])
             // get the file name to be executed
             else
             {
+                printf("HI\n");
+                op.filename = (char *)malloc(strlen(argv[i]) + 1);
                 op.filename = argv[i];
-                char *fargs[argc - i];
-                for (int j = 0; j < argc - 1; j++) {
-                    fargs[j] = argv[i + j + 1];
+                op.fileargscount = argc - i - 1;
+                printf("%s\n", argv[i]);
+                
+                op.fileargs = (char **)malloc(sizeof(argc - i - 1));
+                for (int j = 0; j < argc - i - 1; j++) {
+                    printf("%s\n", argv[i + j + 1]);
+                    op.fileargs[j] = (char *)malloc(strlen(argv[i + j + 1]) + 1);
                 }
                 break;
             }
-        }
-    }
+        } // while loop
+    } // else
 
     return op;
 }
