@@ -9,7 +9,7 @@
 options_t getControllerInitCommand(int argc, char *argv[])
 {
 
-    options_t op = {1, -1, 0, -1, -1, NULL, NULL, NULL, NULL};
+    options_t op = {1, -1, 0, -1, -1, NULL, NULL, NULL};
 
     // needs at least 4 arguments include the first ./controller
     if (argc < 4)
@@ -55,6 +55,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
+                    // op.sizeOutfile = strlen(argv[i + 1]);
                     op.outfile = (char *)malloc(strlen(argv[i + 1]) + 1);
                     op.outfile = argv[i + 1];
                     i += 2;
@@ -71,6 +72,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
+                    // op.sizeLogfile = strlen(argv[i + 1]);
                     op.logfile = (char *)malloc(strlen(argv[i + 1]) + 1);
                     op.logfile = argv[i + 1];
                     i += 2;
@@ -99,14 +101,22 @@ options_t getControllerInitCommand(int argc, char *argv[])
             }
             // get the file name to be executed
             else
-            {
-                printf("HI\n");
-                op.filename = (char *)malloc(strlen(argv[i]) + 1);
-                op.filename = argv[i];
-                op.fileargscount = argc - i - 1;
-                op.fileargs = (char **)malloc(sizeof(argc - i - 1));
-                for (int j = 0; j < argc - i - 1; j++) {
-                    op.fileargs[j] = (char *)malloc(strlen(argv[i + j + 1]) + 1);
+            { 
+                // pre (i == the index of filename)
+                // create buf for the exec command 
+                int bufCount = 0;
+                for (int j=i; j < argc; j++) {
+                    bufCount += strlen(argv[j]);
+                    bufCount++; // for the space
+                }
+                op.execCommand = malloc(sizeof(char) * bufCount);
+                // op.sizeExecCommand = bufCount;
+                // concat args and make a string of command
+                strcpy(op.execCommand, argv[i]);
+                int current = 0;
+                for (int j=i+1; j < argc; j++) {
+                    strcat(op.execCommand, " ");
+                    strcat(op.execCommand, argv[j]);
                 }
                 break;
             }

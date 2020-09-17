@@ -14,3 +14,10 @@ void Error(char *msg) {
     perror(msg);
     exit(1);
 }
+
+// void exmalloc(size_t size) {
+//     if (malloc(size) == -1) {
+//         perror("malloc");
+//         exit(1);
+//     }
+// }

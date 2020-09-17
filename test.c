@@ -18,12 +18,14 @@ typedef struct {
 
 int main () {
 
+
     hello *h = malloc(sizeof(hello));
     
     h->num = 4;
     h->c = "HEY";
 
-    printf("%s\n", (char *)h);
+    printf("%lu\n", sizeof(h->c));
+    printf("%lu\n", strlen(h->c));
 
     return 0;
 }

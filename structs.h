@@ -11,6 +11,4 @@ typedef struct
     char *logfile;
     char *outfile;
     char *execCommand;
-    char *filename;
-    char **fileargs;
 } options_t;
