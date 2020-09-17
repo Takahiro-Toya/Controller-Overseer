@@ -12,6 +12,7 @@
 #include <time.h>
 #include "structs.h"
 #include "extensions.h"
+#include "helper.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
@@ -26,8 +27,8 @@ options_t receive_options(int socket_id) {
     recv(socket_id, &hcmdsize, sizeof(uint16_t), 0);
     recv(socket_id, &hargc, sizeof(uint16_t), 0);
     cmdsize = ntohs(hcmdsize);
-    op.execArgc = ntohs(hargc)
-    ;
+    op.execArgc = ntohs(hargc);
+
     // allocate for data
     op.execCommand = malloc(sizeof(char) * cmdsize);
 
@@ -94,15 +95,39 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        time_t t = time(NULL);
-        struct tm *local = localtime(&t);
-        printf("%d-%d-%d %d:%d:%d - connection received from %s\n", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec, inet_ntoa(their_addr.sin_addr));
+        timestamp();
+        printf("- connection received from %s\n", inet_ntoa(their_addr.sin_addr));
 
         if (!fork())
         { /* this is the child process */
 
             options_t op = receive_options(new_fd);
-            // exec(op.execCommand);
+            char **argsarray = split_string_by_space(op.execCommand, op.execArgc);
+            char *path = argsarray[0];
+            char **args = get_args_from_arg_array(argsarray, op.execArgc - 1);
+            int retval, status;
+            pid_t pid = fork();
+            if (pid < 0) {
+                exPerror("fork");
+            } else if (pid == 0) {
+                // child process
+                execv(path, args);
+                printf("%s has been executed with pid %d\n", path, getpid());
+                exit(retval);
+            } else {
+                // parent process
+                if (waitpid(pid, &status, 0) < 0) {
+                    exPerror("waitpid");
+                    exit(1);
+                }
+                if (WIFEXITED(status)) {
+                    timestamp();
+                    printf("%s has terminated with status code %d\n", path, WEXITSTATUS(status));
+                } else {
+                    timestamp();
+                    printf("i dont know whats happening");
+                }
+            }
 
             exSend(new_fd, "Options received\n", 40, 0); 
 

@@ -55,7 +55,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
-                    op.outfile = (char *)malloc(strlen(argv[i + 1]) + 1);
+                    op.outfile = (char *)malloc(sizeof(char) * (strlen(argv[i +1]) + 1));
                     op.outfile = argv[i + 1];
                     i += 2;
                 }
@@ -71,7 +71,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
-                    op.logfile = (char *)malloc(strlen(argv[i + 1]) + 1);
+                    op.logfile = (char *)malloc(sizeof(char) * (strlen(argv[i +1]) + 1));
                     op.logfile = argv[i + 1];
                     i += 2;
                 }
