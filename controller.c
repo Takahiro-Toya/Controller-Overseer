@@ -13,17 +13,17 @@
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
-void sendOptions(int socket_id, options_t options) {
+void send_options(int socket_id, options_t options) {
     
     uint16_t hcmdsize = htons(strlen(options.execCommand));
-    // send header
-    if (send(socket_id, &hcmdsize, sizeof(uint16_t), 0) == -1) {
-        Error("send");
-    }
-    // send exec command
-    if (send(socket_id, options.execCommand, strlen(options.execCommand), 0) == -1) {
-        Error("send");
-    }
+    uint16_t hargc = htons(options.execArgc);
+    // send data size
+    exSend(socket_id, &hcmdsize, sizeof(uint16_t), 0);
+    // send argument counts (how many strings the data can be split)
+    exSend(socket_id, &hargc, sizeof(uint16_t), 0);
+    // send data
+    exSend(socket_id, options.execCommand, strlen(options.execCommand), 0);
+
 
 }
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        Error("socket");
+        exPerror("socket");
     }
 
     /* clear address struct */
@@ -65,14 +65,10 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    sendOptions(sockfd, options); 
+    send_options(sockfd, options); 
 
     /* Receive message back from server */
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) == -1)
-    {
-        Error("recv");
-        exit(1);
-    }
+    numbytes = exRecv(sockfd, buf, MAXDATASIZE, 0);
 
     buf[numbytes] = '\0';
 

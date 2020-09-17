@@ -9,15 +9,22 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-void Error(char *msg) {
+void exPerror(char *msg) {
 
     perror(msg);
     exit(1);
 }
 
-// void exmalloc(size_t size) {
-//     if (malloc(size) == -1) {
-//         perror("malloc");
-//         exit(1);
-//     }
-// }
+void exSend(int socket_id, void *obj, size_t size, int option) {
+    if (send(socket_id, obj, size, option) == -1) {
+        exPerror("send");
+    }
+}
+
+int exRecv(int socket_id, void *obj, size_t size, int option) {
+    int numBytes = -1;
+    if ((numBytes = recv(socket_id, obj, size, option)) == -1) {
+        exPerror("recv");
+    }
+    return numBytes;
+}

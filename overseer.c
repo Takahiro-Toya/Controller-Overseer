@@ -17,21 +17,23 @@
 
 #define RETURNED_ERROR -1
 
-options_t receiveOptions(int socket_id) {
-    options_t op = {1, -1, 0, -1, -1, NULL, NULL, NULL};
-    uint16_t hcmdsize;
-    int numBytes, i = 0;
-    int cmdsize = 0;
-    if (recv(socket_id, &hcmdsize, sizeof(uint16_t), 0) == -1) {
-        Error("recv");
-    }
+options_t receive_options(int socket_id) {
+    options_t op = {1, -1, 0, -1, -1, 1,  NULL, NULL, NULL};
+    uint16_t hcmdsize, hargc;
+    int numBytes, cmdsize;
+
+    // receive header
+    recv(socket_id, &hcmdsize, sizeof(uint16_t), 0);
+    recv(socket_id, &hargc, sizeof(uint16_t), 0);
     cmdsize = ntohs(hcmdsize);
+    op.execArgc = ntohs(hargc)
+    ;
+    // allocate for data
     op.execCommand = malloc(sizeof(char) * cmdsize);
-    if ((numBytes = recv(socket_id, op.execCommand, sizeof(char) * cmdsize, 0)) == -1) {
-        Error("recv");
-    }
+
+    // receive data
+    numBytes = exRecv(socket_id, op.execCommand, sizeof(char) * cmdsize, 0);
     op.execCommand[numBytes] = '\0';
-    
     return op;
 }
 
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        Error("socket");
+        exPerror("socket");
     }
 
     /* Enable address/port reuse, useful for server development */
@@ -72,13 +74,13 @@ int main(int argc, char *argv[])
     /* bind the socket to the end point */
     if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
     {
-        Error("bind");
+        exPerror("bind");
     }
 
     /* start listnening */
     if (listen(sockfd, BACKLOG) == -1)
     {
-        Error("listen");
+        exPerror("listen");
     }
 
     /* repeat: accept, send, close the connection */
@@ -99,13 +101,11 @@ int main(int argc, char *argv[])
         if (!fork())
         { /* this is the child process */
 
-            options_t op = receiveOptions(new_fd);
-            printf("log: %s, out: %s, seconds: %d, command: %s, mem: %d, memkill: %d\n",
-                op.logfile, op.outfile, op.seconds, op.execCommand, op.mem, op.memkill
-            );
-                       
-            if (send(new_fd, "Options received\n", 40, 0) == -1)
-                Error("send");
+            options_t op = receive_options(new_fd);
+            // exec(op.execCommand);
+
+            exSend(new_fd, "Options received\n", 40, 0); 
+
             close(new_fd);
             exit(0);
         }
