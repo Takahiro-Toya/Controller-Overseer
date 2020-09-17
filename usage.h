@@ -4,28 +4,10 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-
-typedef struct
-{
-    int success, seconds, fileargscount, mem, memkill;
-    char *logfile;
-    char *outfile;
-    char *filename;
-    char **fileargs;
-} options_t;
+#include "structs.h"
 
 options_t getControllerInitCommand(int argc, char *argv[])
 {
-    // options_t *op = malloc(sizeof(options_t));
-    // op->success = 0;
-    // op->seconds = -1;
-    // op->fileargscount = 0;
-    // op->mem = -1;
-    // op->memkill = -1;
-    // op->logfile = NULL;
-    // op->outfile = NULL;
-    // op->fileargs = NULL;
-    // op->filename = NULL;
 
     options_t op = {1, -1, 0, -1, -1, NULL, NULL, NULL, NULL};
 
@@ -122,11 +104,8 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 op.filename = (char *)malloc(strlen(argv[i]) + 1);
                 op.filename = argv[i];
                 op.fileargscount = argc - i - 1;
-                printf("%s\n", argv[i]);
-                
                 op.fileargs = (char **)malloc(sizeof(argc - i - 1));
                 for (int j = 0; j < argc - i - 1; j++) {
-                    printf("%s\n", argv[i + j + 1]);
                     op.fileargs[j] = (char *)malloc(strlen(argv[i + j + 1]) + 1);
                 }
                 break;
