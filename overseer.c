@@ -18,8 +18,9 @@
 
 #define RETURNED_ERROR -1
 
-options_t receive_options(int socket_id) {
-    options_t op = {1, -1, 0, -1, -1, 1,  NULL, NULL, NULL};
+options_t receive_options(int socket_id)
+{
+    options_t op = {1, -1, 0, -1, -1, 1, NULL, NULL, NULL};
     uint16_t hcmdsize, hargc;
     int numBytes, cmdsize;
 
@@ -37,8 +38,6 @@ options_t receive_options(int socket_id) {
     op.execCommand[numBytes] = '\0';
     return op;
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -102,34 +101,52 @@ int main(int argc, char *argv[])
         { /* this is the child process */
 
             options_t op = receive_options(new_fd);
-            char **argsarray = split_string_by_space(op.execCommand, op.execArgc);
-            char *path = argsarray[0];
-            char **args = get_args_from_arg_array(argsarray, op.execArgc - 1);
+            char **args = split_string_by_space(op.execCommand, op.execArgc);
             int retval, status;
+            int success = 1;
+            pid_t c_pid = -1;
             pid_t pid = fork();
-            if (pid < 0) {
+            if (pid < 0)
+            {
                 exPerror("fork");
-            } else if (pid == 0) {
-                // child process
-                execv(path, args);
-                printf("%s has been executed with pid %d\n", path, getpid());
-                exit(retval);
-            } else {
-                // parent process
-                if (waitpid(pid, &status, 0) < 0) {
-                    exPerror("waitpid");
-                    exit(1);
-                }
-                if (WIFEXITED(status)) {
+            }
+            else if (pid == 0)
+            {
+                timestamp();
+                printf("- attempting to execute %s\n", op.execCommand);
+                c_pid = getpid(); // this is not passed to parent because it's valid only in this process
+                execv(args[0], &args[0]);   
+                if (errno > 0) {
                     timestamp();
-                    printf("%s has terminated with status code %d\n", path, WEXITSTATUS(status));
-                } else {
+                    printf("- could not execute %s\n", op.execCommand);
+                    success = -1;
+                }
+                exit(retval);
+            }
+            else
+            {
+                // parent process
+                if (waitpid(pid, &status, 0) < 0)
+                {
+                    exPerror("waitpid");
+                }
+                if (WIFEXITED(status))
+                {
+                    if (success == 1) {
+                        timestamp();
+                        printf("%s has been executed with pid %d\n", op.execCommand, c_pid); 
+                        timestamp();
+                        printf("%d has terminated with status code %d\n", c_pid, WEXITSTATUS(status));    
+                    }
+               }
+                else
+                {
                     timestamp();
                     printf("i dont know whats happening");
                 }
             }
 
-            exSend(new_fd, "Options received\n", 40, 0); 
+            exSend(new_fd, "Options received\n", 40, 0);
 
             close(new_fd);
             exit(0);
