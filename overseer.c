@@ -13,6 +13,7 @@
 #include "structs.h"
 #include "extensions.h"
 #include "helper.h"
+#include "fork.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in my_addr;
     struct sockaddr_in their_addr;
     socklen_t sin_size;
-    int i = 0; // ???
+    // int i = 0; // ???
 
     if (argc != 2)
     {
@@ -103,8 +104,6 @@ int main(int argc, char *argv[])
             options_t op = receive_options(new_fd);
             char **args = split_string_by_space(op.execCommand, op.execArgc);
             int retval, status;
-            int success = 1;
-            pid_t c_pid = -1;
             pid_t pid = fork();
             if (pid < 0)
             {
@@ -114,14 +113,17 @@ int main(int argc, char *argv[])
             {
                 timestamp();
                 printf("- attempting to execute %s\n", op.execCommand);
-                c_pid = getpid(); // this is not passed to parent because it's valid only in this process
-                execv(args[0], &args[0]);   
-                if (errno > 0) {
+
+                // execute
+                int r = execv(args[0], &args[0]);
+                if (r < 0)
+                {
                     timestamp();
                     printf("- could not execute %s\n", op.execCommand);
-                    success = -1;
+                    exit(-1);
                 }
                 exit(retval);
+                // executed only when execv fails
             }
             else
             {
@@ -132,13 +134,14 @@ int main(int argc, char *argv[])
                 }
                 if (WIFEXITED(status))
                 {
-                    if (success == 1) {
+                    if (retval != -1)
+                    {
                         timestamp();
-                        printf("%s has been executed with pid %d\n", op.execCommand, c_pid); 
+                        printf("- %s has been executed with pid %d\n", op.execCommand, getpid());
                         timestamp();
-                        printf("%d has terminated with status code %d\n", c_pid, WEXITSTATUS(status));    
+                        printf("- %d has terminated with status code %d\n", getpid(), WEXITSTATUS(status));
                     }
-               }
+                }
                 else
                 {
                     timestamp();

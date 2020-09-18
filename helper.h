@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
+#include <stdarg.h>
 
 void timestamp()
 {
@@ -31,7 +32,17 @@ char **split_string_by_space(char *string, int splitnum)
 
     free(p);
 
-    strarray[splitnum] = NULL; 
+    strarray[splitnum] = NULL;
 
     return strarray;
+}
+
+void print_int(int i) 
+{
+    printf("%d\n", i);
+} 
+
+void print_string(char *string)
+{
+    printf("%s\n", string);
 }
