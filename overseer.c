@@ -104,6 +104,9 @@ int main(int argc, char *argv[])
             options_t op = receive_options(new_fd);
             char **args = split_string_by_space(op.execCommand, op.execArgc);
             int retval, status;
+            int sstate = 1;
+            int fd[2];
+            pipe(fd);
             pid_t pid = fork();
             if (pid < 0)
             {
@@ -111,36 +114,41 @@ int main(int argc, char *argv[])
             }
             else if (pid == 0)
             {
+                // child process
+                close(fd[0]);
                 timestamp();
                 printf("- attempting to execute %s\n", op.execCommand);
 
                 // execute
-                int r = execv(args[0], &args[0]);
-                if (r < 0)
+                if (execv(args[0], &args[0]) < 0)
                 {
+                    // below not executed if execv succeeded
+                    sstate = -1;
+                    write(fd[1], &sstate, sizeof(sstate));
                     timestamp();
                     printf("- could not execute %s\n", op.execCommand);
-                    exit(-1);
+                    close(fd[1]);
                 }
-                exit(retval);
-                // executed only when execv fails
             }
             else
             {
                 // parent process
+                close(fd[1]);
                 if (waitpid(pid, &status, 0) < 0)
                 {
                     exPerror("waitpid");
                 }
                 if (WIFEXITED(status))
                 {
-                    if (retval != -1)
+                    read(fd[0], &sstate, sizeof(sstate));
+                    if (sstate == 1)
                     {
                         timestamp();
-                        printf("- %s has been executed with pid %d\n", op.execCommand, getpid());
+                        printf("- %s has been executed with pid %d\n", op.execCommand, pid);
                         timestamp();
-                        printf("- %d has terminated with status code %d\n", getpid(), WEXITSTATUS(status));
+                        printf("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
                     }
+                    close(fd[0]);
                 }
                 else
                 {
