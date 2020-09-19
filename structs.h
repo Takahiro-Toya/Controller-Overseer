@@ -7,7 +7,7 @@
 
 typedef struct
 {
-    int success, seconds, fileargscount, mem, memkill, execArgc;
+    int success, seconds, mem, memkill, execArgc;
     char *logfile;
     char *outfile;
     char *execCommand;

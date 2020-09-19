@@ -21,22 +21,59 @@
 
 options_t receive_options(int socket_id)
 {
-    options_t op = {1, -1, 0, -1, -1, 1, NULL, NULL, NULL};
-    uint16_t hcmdsize, hargc;
-    int numBytes, cmdsize;
+    options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
+    uint16_t hsize, hargc;
+    int numBytes, hsizeint, tbool;
 
-    // receive header
-    recv(socket_id, &hcmdsize, sizeof(uint16_t), 0);
-    recv(socket_id, &hargc, sizeof(uint16_t), 0);
-    cmdsize = ntohs(hcmdsize);
-    op.execArgc = ntohs(hargc);
+    char *discard = (char *)malloc(sizeof(char));
 
-    // allocate for data
-    op.execCommand = malloc(sizeof(char) * cmdsize);
-
-    // receive data
-    numBytes = exRecv(socket_id, op.execCommand, sizeof(char) * cmdsize, 0);
+    // receive file name header
+    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+    hsizeint = ntohs(hsize);
+    // malloc for filename
+    op.execCommand = malloc(sizeof(char) * hsizeint);
+    // receive number of arguments
+    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+    op.execArgc = ntohs(hsize);
+    // receive file name
+    numBytes = exRecv(socket_id, op.execCommand, sizeof(char) * hsizeint, 0);
     op.execCommand[numBytes] = '\0';
+
+    // receive -o header
+    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+    hsizeint = ntohs(hsize);
+    // receive o file name
+    if (hsizeint != 0) {
+        op.outfile = malloc(sizeof(char) * hsizeint);
+        numBytes = exRecv(socket_id, op.outfile, sizeof(char) * hsizeint, 0);
+        op.outfile[numBytes] = '\0';
+    }  else {
+        exRecv(socket_id, discard, sizeof(char), 0);
+    }
+    // receive -log header
+    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+    hsizeint = ntohs(hsize);
+    // receive log file name
+    if (hsizeint != 0) {
+        op.logfile = malloc(sizeof(char) * hsizeint);
+        numBytes = exRecv(socket_id, op.logfile, sizeof(char) * hsizeint, 0);
+        op.logfile[numBytes] = '\0';
+    }  else {
+        exRecv(socket_id, discard, sizeof(char), 0);
+    }
+    // receive -t header
+    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+    tbool = ntohs(hsize);
+    // receive -t val
+    if (hsizeint != 0) {
+        exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+        op.seconds = ntohs(hsize);
+    }  else {
+        exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
+    }
+
+    printf("%s %d %s %s %d", op.execCommand, op.execArgc, op.outfile, op.logfile, op.seconds);
+
     return op;
 }
 

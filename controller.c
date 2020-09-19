@@ -15,16 +15,33 @@
 
 void send_options(int socket_id, options_t options) {
     
-    uint16_t hcmdsize = htons(strlen(options.execCommand));
+    uint16_t hsize = htons(strlen(options.execCommand));
     uint16_t hargc = htons(options.execArgc);
-    // send data size
-    exSend(socket_id, &hcmdsize, sizeof(uint16_t), 0);
-    // send argument counts (how many strings the data can be split)
+    // send executable file name size
+    exSend(socket_id, &hsize, sizeof(uint16_t), 0);
+    // send executable file's argument counts (how many strings the data can be split)
     exSend(socket_id, &hargc, sizeof(uint16_t), 0);
-    // send data
+    // send excutable file name 
     exSend(socket_id, options.execCommand, strlen(options.execCommand), 0);
 
-
+    // send the output file name size
+    hsize = options.outfile == NULL ? htons(0) : htons(strlen(options.outfile));
+    int size = options.outfile == NULL ? 0 : strlen(options.outfile);
+    exSend(socket_id, &hsize, sizeof(uint16_t), 0);
+    // send the output file name
+    exSend(socket_id, options.outfile == NULL ? "" : options.outfile, size, 0);
+    // send the log file name size
+    hsize = options.logfile == NULL ? htons(0) : htons(strlen(options.logfile));
+    size = options.logfile == NULL ? 0 : strlen(options.logfile);
+    exSend(socket_id, &hsize, sizeof(uint16_t), 0);
+    exSend(socket_id, options.logfile == NULL ? "" : options.logfile, size, 0);
+    // send the -t option boolean (0 for not specified, 1 for specified)
+    hsize = options.seconds == -1 ? htons(0) : htons(1);
+    uint16_t val = options.seconds == -1 ? htons(0) : htons(options.seconds);
+    exSend(socket_id, &hsize, sizeof(uint16_t), 0);
+    // send the -t option value
+    exSend(socket_id, &val, sizeof(uint16_t), 0);
+    printf("ex sent!");
 }
 
 int main(int argc, char *argv[])

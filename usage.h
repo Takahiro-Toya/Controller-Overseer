@@ -6,15 +6,30 @@
 #include <sys/types.h>
 #include "structs.h"
 
+void print_usage_error() {
+    fprintf(stderr, "usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+}
+
+/*
+ * Check the input arguments and retrieves each of arguments such as IP address, file names etc.
+ * Print usage error if user inputs undefined command and returns struct options_t that stores the user input
+ * options_t defined in structs.h 
+ */
 options_t getControllerInitCommand(int argc, char *argv[])
 {
 
-    options_t op = {1, -1, 0, -1, -1, 1, NULL, NULL, NULL};
+    options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
+
+    if (strcmp(argv[1], "--help") == 0) {
+        printf("usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+        op.success = -1;
+        return op;
+    }
 
     // needs at least 4 arguments include the first ./controller
     if (argc < 4)
     {
-        fprintf(stderr, "usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
+        print_usage_error();
         op.success = -1;
         return op;
     }
@@ -36,7 +51,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
     {
         if (argc < 5)
         {
-            fprintf(stderr, "usage: memkill <percent>\n");
+            print_usage_error();
             op.success = -1;
         }
         else
@@ -61,7 +76,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 }
                 else
                 {
-                    fprintf(stderr, "usage: [-o out_file] [-log log_file] [-t seconds] <file> [arg...]\n");
+                    print_usage_error();
                     op.success = -1;
                     break;
                 }
@@ -77,7 +92,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 }
                 else
                 {
-                    fprintf(stderr, "usage: [-o out_file] [-log log_file] [-t seconds] <file> [arg...]\n");
+                    print_usage_error();
                     op.success = -1;
                     break;
                 }
@@ -92,7 +107,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 }
                 else
                 {
-                    fprintf(stderr, "usage: [-o out_file] [-log log_file] [-t seconds] <file> [arg...]\n");
+                    print_usage_error();
                     op.success = -1;
                     break;
                 }
