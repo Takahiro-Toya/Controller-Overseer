@@ -6,7 +6,11 @@
 #include <sys/types.h>
 #include "structs.h"
 
-void print_usage_error() {
+/*
+ * print usage message to stderr
+*/
+void print_usage_error()
+{
     fprintf(stderr, "usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
 }
 
@@ -20,7 +24,9 @@ options_t getControllerInitCommand(int argc, char *argv[])
 
     options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
 
-    if (strcmp(argv[1], "--help") == 0) {
+    // print usage to stdout
+    if (strcmp(argv[1], "--help") == 0)
+    {
         printf("usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
         op.success = -1;
         return op;
@@ -63,16 +69,20 @@ options_t getControllerInitCommand(int argc, char *argv[])
     else
     {
         int i = 3;
+        bool o = false;
+        bool l = false;
+        bool t = false;
         while (i < argc)
         {
             if (strcmp(argv[i], "-o") == 0 && i % 2 != 0)
             {
                 // there must be at least TWO MORE arguments following this flag
-                if (argc - 1 - i >= 2)
+                if (argc - 1 - i >= 2 && !l && !t)
                 {
-                    op.outfile = (char *)malloc(sizeof(char) * (strlen(argv[i +1]) + 1));
+                    op.outfile = (char *)malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
                     op.outfile = argv[i + 1];
                     i += 2;
+                    o = true;
                 }
                 else
                 {
@@ -84,11 +94,12 @@ options_t getControllerInitCommand(int argc, char *argv[])
             else if (strcmp(argv[i], "-log") == 0 && i % 2 != 0)
             {
                 // there must be at least TWO MORE arguments following this flag
-                if (argc - 1 - i >= 2)
+                if (argc - 1 - i >= 2 && !t)
                 {
-                    op.logfile = (char *)malloc(sizeof(char) * (strlen(argv[i +1]) + 1));
+                    op.logfile = (char *)malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
                     op.logfile = argv[i + 1];
                     i += 2;
+                    l = true;
                 }
                 else
                 {
@@ -102,8 +113,9 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 // there must be at least TWO MORE arguments following this flag
                 if (argc - 1 - i >= 2)
                 {
-                    op.seconds = atoi(argv[i+1]);
+                    op.seconds = atoi(argv[i + 1]);
                     i += 2;
+                    t = true;
                 }
                 else
                 {
@@ -114,11 +126,12 @@ options_t getControllerInitCommand(int argc, char *argv[])
             }
             // get the file name to be executed
             else
-            { 
+            {
                 // pre (i == the index of filename)
-                // create buf for the exec command 
+                // create buf for the exec command
                 int bufCount = 0;
-                for (int j=i; j < argc; j++) {
+                for (int j = i; j < argc; j++)
+                {
                     bufCount += strlen(argv[j]);
                     bufCount++; // for the space
                 }
@@ -128,14 +141,15 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 // concat args and make a string of command
                 strcpy(op.execCommand, argv[i]);
                 int current = 0;
-                for (int j=i+1; j < argc; j++) {
+                for (int j = i + 1; j < argc; j++)
+                {
                     strcat(op.execCommand, " ");
                     strcat(op.execCommand, argv[j]);
                 }
                 break;
             }
         } // while loop
-    } // else
+    }     // else
 
     return op;
 }

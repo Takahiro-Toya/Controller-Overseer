@@ -42,7 +42,6 @@ void send_options(int socket_id, options_t options) {
     exSend(socket_id, &hsize, sizeof(uint16_t), 0);
     // send the -t option value
     exSend(socket_id, &val, sizeof(uint16_t), 0);
-    printf("%s %d %s %s %d\n", options.execCommand, options.execArgc, options.outfile, options.logfile, options.seconds);
 }
 
 int main(int argc, char *argv[])
