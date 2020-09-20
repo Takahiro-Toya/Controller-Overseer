@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <stdarg.h>
+#include <fcntl.h>
 
 /*
  * printf timestamp Y-M-d h-m-s
@@ -59,4 +60,60 @@ void print_int(int i)
 void print_string(char *string)
 {
     printf("%s\n", string);
+}
+
+void set_dest(char *file)
+{
+    if (file != NULL)
+    {
+        int efd;
+        if ((efd = open(file, O_CREAT | O_WRONLY, 0666)) < 0)
+        {
+            exPerror("open logfile");
+        }
+        else
+        {
+            dup2(efd, 1);
+            close(efd);
+        }
+    }
+}
+
+int open_dest(char *file)
+{
+    int efd = -1;
+    if (file != NULL)
+    {
+        if ((efd = open(file, O_CREAT | O_WRONLY, 0666)) < 0)
+        {
+            exPerror("open logfile");
+        }
+        else
+        {
+            dup2(efd, 1);
+            return efd;
+        }
+    }
+
+    return efd;
+}
+
+void close_dest(int fd)
+{
+    if (!(fd < 0))
+    {
+        close(fd);
+    }
+}
+
+/*
+ * Normal print following timestamp
+ */
+void print_log(const char *format, ...)
+{
+    timestamp();
+    va_list va;
+    va_start(va, format);
+    vprintf(format, va);
+    va_end(va);
 }

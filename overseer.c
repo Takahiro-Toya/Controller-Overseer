@@ -43,37 +43,43 @@ options_t receive_options(int socket_id)
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     hsizeint = ntohs(hsize);
     // receive o file name
-    if (hsizeint != 0) {
+    if (hsizeint != 0)
+    {
         op.outfile = malloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op.outfile, sizeof(char) * hsizeint, 0);
         op.outfile[numBytes] = '\0';
-    }  else {
+    }
+    else
+    {
         exRecv(socket_id, discard, sizeof(char), 0);
     }
     // receive -log header
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     hsizeint = ntohs(hsize);
     // receive log file name
-    if (hsizeint != 0) {
+    if (hsizeint != 0)
+    {
         op.logfile = malloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op.logfile, sizeof(char) * hsizeint, 0);
         op.logfile[numBytes] = '\0';
-    }  else {
+    }
+    else
+    {
         exRecv(socket_id, discard, sizeof(char), 0);
     }
     // receive -t header
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     tbool = ntohs(hsize);
     // receive -t val
-    if (tbool != 0) {
+    if (tbool != 0)
+    {
         exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
         op.seconds = ntohs(hsize);
-    }  else {
+    }
+    else
+    {
         exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     }
-
-    printf("%s %d %s %s %d\n", op.execCommand, op.execArgc, op.outfile, op.logfile, op.seconds);
-
     return op;
 }
 
@@ -132,70 +138,66 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        timestamp();
-        printf("- connection received from %s\n", inet_ntoa(their_addr.sin_addr));
+        print_log("- connection received from %s\n", inet_ntoa(their_addr.sin_addr));
 
         if (!fork())
-        { /* this is the child process */
+        {
 
             options_t op = receive_options(new_fd);
             char **args = split_string_by_space(op.execCommand, op.execArgc);
             int retval, status;
             int sstate = 1;
-            int fd[2];
-            pipe(fd);
+            int sfd[2];
+            pipe(sfd);
+            // spawn for executing files
             pid_t pid = fork();
+            int log_fd = open_dest(op.logfile);
             if (pid < 0)
             {
                 exPerror("fork");
             }
-            else if (pid == 0)
+            else if (pid == 0) // child process
             {
-                // child process
-                close(fd[0]);
-                timestamp();
-                printf("- attempting to execute %s\n", op.execCommand);
-
+                close(sfd[0]);
+                print_log("- attempting to execute %s\n", op.execCommand);
                 // execute
-                if (execv(args[0], &args[0]) < 0)
+                int out_fd = open_dest(op.outfile);
+                int r = execv(args[0], &args[0]);
+                close_dest(out_fd);
+                if (r < 0)
                 {
                     // below not executed if execv succeeded
                     sstate = -1;
-                    write(fd[1], &sstate, sizeof(sstate));
-                    timestamp();
-                    printf("- could not execute %s\n", op.execCommand);
-                    close(fd[1]);
+                    write(sfd[1], &sstate, sizeof(sstate));
+                    print_log("- could not execute %s\n", op.execCommand);
+                    close(sfd[1]);
                 }
             }
-            else
+            else // parent process
             {
-                // parent process
-                close(fd[1]);
+                close(sfd[1]);
                 if (waitpid(pid, &status, 0) < 0)
                 {
                     exPerror("waitpid");
                 }
                 if (WIFEXITED(status))
                 {
-                    read(fd[0], &sstate, sizeof(sstate));
+                    read(sfd[0], &sstate, sizeof(sstate));
                     if (sstate == 1)
                     {
-                        timestamp();
-                        printf("- %s has been executed with pid %d\n", op.execCommand, pid);
-                        timestamp();
-                        printf("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
+                        print_log(op.logfile, "- %s has been executed with pid %d\n", op.execCommand, pid);
+                        print_log(op.logfile, "- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
                     }
-                    close(fd[0]);
+                    close(sfd[0]);
                 }
                 else
                 {
-                    timestamp();
-                    printf("i dont know whats happening");
+                    print_log("- %s", __LINE__);
                 }
             }
-
+            dup2(log_fd, 1);
+            close_dest(log_fd);
             exSend(new_fd, "Options received\n", 40, 0);
-
             close(new_fd);
             exit(0);
         }
