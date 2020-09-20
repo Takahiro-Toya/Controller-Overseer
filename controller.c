@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "usage.h"
 #include "extensions.h"
+#include "helper.h"
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 
@@ -26,13 +27,13 @@ void send_options(int socket_id, options_t options) {
 
     // send the output file name size
     hsize = options.outfile == NULL ? htons(0) : htons(strlen(options.outfile));
-    int size = options.outfile == NULL ? 0 : strlen(options.outfile);
+    int size = options.outfile == NULL ? 1 : strlen(options.outfile);
     exSend(socket_id, &hsize, sizeof(uint16_t), 0);
     // send the output file name
     exSend(socket_id, options.outfile == NULL ? "" : options.outfile, size, 0);
     // send the log file name size
     hsize = options.logfile == NULL ? htons(0) : htons(strlen(options.logfile));
-    size = options.logfile == NULL ? 0 : strlen(options.logfile);
+    size = options.logfile == NULL ? 1 : strlen(options.logfile);
     exSend(socket_id, &hsize, sizeof(uint16_t), 0);
     exSend(socket_id, options.logfile == NULL ? "" : options.logfile, size, 0);
     // send the -t option boolean (0 for not specified, 1 for specified)
@@ -41,7 +42,7 @@ void send_options(int socket_id, options_t options) {
     exSend(socket_id, &hsize, sizeof(uint16_t), 0);
     // send the -t option value
     exSend(socket_id, &val, sizeof(uint16_t), 0);
-    printf("ex sent!");
+    printf("%s %d %s %s %d\n", options.execCommand, options.execArgc, options.outfile, options.logfile, options.seconds);
 }
 
 int main(int argc, char *argv[])

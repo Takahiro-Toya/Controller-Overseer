@@ -25,7 +25,7 @@ options_t receive_options(int socket_id)
     uint16_t hsize, hargc;
     int numBytes, hsizeint, tbool;
 
-    char *discard = (char *)malloc(sizeof(char));
+    char *discard = (char *)malloc(sizeof(char) * 2);
 
     // receive file name header
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
@@ -65,14 +65,14 @@ options_t receive_options(int socket_id)
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     tbool = ntohs(hsize);
     // receive -t val
-    if (hsizeint != 0) {
+    if (tbool != 0) {
         exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
         op.seconds = ntohs(hsize);
     }  else {
         exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     }
 
-    printf("%s %d %s %s %d", op.execCommand, op.execArgc, op.outfile, op.logfile, op.seconds);
+    printf("%s %d %s %s %d\n", op.execCommand, op.execArgc, op.outfile, op.logfile, op.seconds);
 
     return op;
 }
