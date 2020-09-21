@@ -157,6 +157,7 @@ int main(int argc, char *argv[])
             }
             else if (pid == 0) // child process
             {
+                fd_init(op.outfile, op.logfile);
                 close(sfd[0]);
                 set_to_log();
                 print_log("- attempting to execute %s\n", op.execCommand);
