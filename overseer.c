@@ -13,7 +13,7 @@
 #include "structs.h"
 #include "extensions.h"
 #include "helper.h"
-#include "fork.h"
+#include "output_manage.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
@@ -138,12 +138,12 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        print_log("- connection received from %s\n", inet_ntoa(their_addr.sin_addr));
-
+        
         if (!fork())
         {
 
             options_t op = receive_options(new_fd);
+            fd_init(op.outfile, op.logfile);
             char **args = split_string_by_space(op.execCommand, op.execArgc);
             int retval, status;
             int sstate = 1;
@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
             pipe(sfd);
             // spawn for executing files
             pid_t pid = fork();
-            int log_fd = open_dest(op.logfile);
             if (pid < 0)
             {
                 exPerror("fork");
@@ -159,14 +158,15 @@ int main(int argc, char *argv[])
             else if (pid == 0) // child process
             {
                 close(sfd[0]);
+                set_to_log();
                 print_log("- attempting to execute %s\n", op.execCommand);
                 // execute
-                int out_fd = open_dest(op.outfile);
+                set_to_out();
                 int r = execv(args[0], &args[0]);
-                close_dest(out_fd);
                 if (r < 0)
                 {
                     // below not executed if execv succeeded
+                    set_to_log();
                     sstate = -1;
                     write(sfd[1], &sstate, sizeof(sstate));
                     print_log("- could not execute %s\n", op.execCommand);
@@ -182,21 +182,22 @@ int main(int argc, char *argv[])
                 }
                 if (WIFEXITED(status))
                 {
+                    set_to_log();
                     read(sfd[0], &sstate, sizeof(sstate));
                     if (sstate == 1)
                     {
-                        print_log(op.logfile, "- %s has been executed with pid %d\n", op.execCommand, pid);
-                        print_log(op.logfile, "- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
+                        print_log("- %s has been executed with pid %d\n", op.execCommand, pid);
+                        print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
                     }
                     close(sfd[0]);
                 }
                 else
                 {
-                    print_log("- %s", __LINE__);
+                    print_log("- %d", __LINE__);
                 }
             }
-            dup2(log_fd, 1);
-            close_dest(log_fd);
+            set_to_default();
+            print_string("THis is in stdout\n");
             exSend(new_fd, "Options received\n", 40, 0);
             close(new_fd);
             exit(0);

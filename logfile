@@ -1,1 +1,31 @@
-2020-9-20 16:16:50 logfile2020-9-20 16:16:50 logfile2020-9-20 16:16:50 TASK COMPLETED
+pid2
+25793
+2020-9-21 21:35:52 - attempting to execute hello taka
+2020-9-21 21:35:56 - hello taka has been executed with pid 25794
+2020-9-21 21:35:56 - 25794 has terminated with status code 0
+pid2
+25835
+2020-9-21 21:36:27 - attempting to execute hello taka
+2020-9-21 21:36:31 - hello taka has been executed with pid 25836
+2020-9-21 21:36:31 - 25836 has terminated with status code 0
+pid2
+25846
+2020-9-21 21:36:43 - attempting to execute hello taka yui
+2020-9-21 21:36:48 - hello taka yui has been executed with pid 25847
+2020-9-21 21:36:48 - 25847 has terminated with status code 0
+pid2
+25867
+2020-9-21 21:37:13 - attempting to execute hello yui
+Hello! yui
+wait for 3 seconds ...
+Done!
+2020-9-21 21:37:17 - hello yui has been executed with pid 25868
+2020-9-21 21:37:17 - 25868 has terminated with status code 0
+Hello! yui
+wait for 3 seconds ...
+Done!
+2020-9-21 21:38:30 - hello yui has been executed with pid 25965
+2020-9-21 21:38:30 - 25965 has terminated with status code 0
+should be in terminal2020-9-21 21:38:54 - attempting to execute hellod yui
+2020-9-21 21:38:54 - could not execute hellod yui
+should be in terminalshould be in terminal
