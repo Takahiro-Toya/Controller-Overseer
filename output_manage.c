@@ -7,7 +7,9 @@
 #include <time.h>
 #include <stdarg.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "output_manage.h"
+
 
 int stdout_copy = -1;
 int stderr_copy = -1;

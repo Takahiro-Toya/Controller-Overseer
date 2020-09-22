@@ -5,6 +5,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+typedef struct optionContainer optionContainer_t;
+
 typedef struct
 {
     int success, seconds, mem, memkill, execArgc;
@@ -13,9 +15,8 @@ typedef struct
     char *execCommand;
 } options_t;
 
-// typedef struct
-// {
-//     options_t *option;
-//     optionContainer_t *next;
-// } optionContainer_t;
-
+struct optionContainer
+{
+    options_t *option;
+    optionContainer_t *next;
+};
