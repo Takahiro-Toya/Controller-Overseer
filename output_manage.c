@@ -20,8 +20,10 @@ int current = 0; // 0: std, 1: out, 2: log
 
 void use_fd() 
 {
-    stdout_copy = dup(1);
-    stderr_copy = dup(2);
+    if (stdout_copy < 0 && stderr_copy < 0) {
+        stdout_copy = dup(1);
+        stderr_copy = dup(2);
+    }
 }
 
 void fd_init(char *outfile, char *logfile)
