@@ -12,3 +12,10 @@ typedef struct
     char *outfile;
     char *execCommand;
 } options_t;
+
+typedef struct
+{
+    options_t *option;
+    optionContainer_t *next;
+} optionContainer_t
+
