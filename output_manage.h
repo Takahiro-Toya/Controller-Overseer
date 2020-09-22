@@ -1,4 +1,6 @@
 
+void use_fd();
+
 void fd_init(char *outfile, char *logfile);
 
 void set_to_out();

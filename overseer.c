@@ -12,8 +12,8 @@
 #include <time.h>
 #include "structs.h"
 #include "extensions.h"
-#include "helper.h"
 #include "output_manage.h"
+#include "thread_manage.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    init_threads();
+
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         exPerror("socket");
@@ -138,63 +140,14 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        
+        use_fd();
+        set_to_default();
+        print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
+        options_t op = receive_options(new_fd);
+        add_request(&op);
         if (!fork())
         {
-
-            options_t op = receive_options(new_fd);
-            fd_init(op.outfile, op.logfile);
-            char **args = split_string_by_space(op.execCommand, op.execArgc);
-            int retval, status;
-            int sstate = 1;
-            int sfd[2];
-            pipe(sfd);
-            print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
-            // spawn for executing files
-            pid_t pid = fork();
-            if (pid < 0)
-            {
-                exPerror("fork");
-            }
-            else if (pid == 0) // child process
-            {
-                close(sfd[0]);
-                set_to_log();
-                print_log("- attempting to execute %s\n", op.execCommand);
-                
-                // execute
-                set_to_out();
-                execv(args[0], &args[0]);
-                // below ignored if execv succeeded
-                sstate = -1;
-                write(sfd[1], &sstate, sizeof(sstate));
-                set_to_log();
-                print_log("- could not execute %s\n", op.execCommand);
-                close(sfd[1]);
-            }
-            else // parent process
-            {
-                close(sfd[1]);
-                if (waitpid(pid, &status, 0) < 0)
-                {
-                    exPerror("waitpid");
-                }
-                if (WIFEXITED(status))
-                {
-                    set_to_log();
-                    read(sfd[0], &sstate, sizeof(sstate));
-                    if (sstate == 1)
-                    {
-                        print_log("- %s has been executed with pid %d\n", op.execCommand, pid);
-                        print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
-                    }
-                    close(sfd[0]);
-                }
-                else
-                {
-                    print_log("- %d", __LINE__);
-                }
-            }
+       
             set_to_default();
             exSend(new_fd, "Options received\n", 40, 0);
             close(new_fd);

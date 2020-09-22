@@ -18,10 +18,14 @@ int out_fd = -1;
 
 int current = 0; // 0: std, 1: out, 2: log
 
-void fd_init(char *outfile, char *logfile)
+void use_fd() 
 {
     stdout_copy = dup(1);
     stderr_copy = dup(2);
+}
+
+void fd_init(char *outfile, char *logfile)
+{
     if (outfile == NULL && logfile == NULL)
     {
         return;
