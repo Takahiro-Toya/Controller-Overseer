@@ -149,6 +149,7 @@ int main(int argc, char *argv[])
             int sstate = 1;
             int sfd[2];
             pipe(sfd);
+            print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
             // spawn for executing files
             pid_t pid = fork();
             if (pid < 0)
