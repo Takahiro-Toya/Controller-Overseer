@@ -157,22 +157,19 @@ int main(int argc, char *argv[])
             }
             else if (pid == 0) // child process
             {
-                fd_init(op.outfile, op.logfile);
                 close(sfd[0]);
                 set_to_log();
                 print_log("- attempting to execute %s\n", op.execCommand);
+                
                 // execute
                 set_to_out();
-                int r = execv(args[0], &args[0]);
-                if (r < 0)
-                {
-                    // below not executed if execv succeeded
-                    set_to_log();
-                    sstate = -1;
-                    write(sfd[1], &sstate, sizeof(sstate));
-                    print_log("- could not execute %s\n", op.execCommand);
-                    close(sfd[1]);
-                }
+                execv(args[0], &args[0]);
+                // below ignored if execv succeeded
+                sstate = -1;
+                write(sfd[1], &sstate, sizeof(sstate));
+                set_to_log();
+                print_log("- could not execute %s\n", op.execCommand);
+                close(sfd[1]);
             }
             else // parent process
             {
@@ -198,7 +195,6 @@ int main(int argc, char *argv[])
                 }
             }
             set_to_default();
-            print_string("THis is in stdout\n");
             exSend(new_fd, "Options received\n", 40, 0);
             close(new_fd);
             exit(0);
