@@ -15,9 +15,17 @@ typedef struct
     char *execCommand;
 } options_t;
 
+typedef struct
+{
+    int seconds, mem, memkill, execArgc, useOut, useLog;
+    char *logfile;
+    char *outfile;
+    char *execCommand;
+} options_server_t;
+
 struct optionContainer
 {
     int log_fd, out_fd;
-    options_t *option;
+    options_server_t *option;
     optionContainer_t *next;
 };

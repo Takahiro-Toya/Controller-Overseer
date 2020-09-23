@@ -22,21 +22,34 @@ int pending_count = 0;
 optionContainer_t *requests = NULL;
 optionContainer_t *last_request = NULL;
 
-void add_request(options_t *option)
+void add_request(options_server_t *option)
 {
-    optionContainer_t *container = malloc(sizeof(optionContainer_t));
+    optionContainer_t *container = (optionContainer_t *)malloc(sizeof(optionContainer_t));
     if (!container)
     {
         fprintf(stderr, "add_request: out of memory\n");
         exit(1);
     }
-    container->option = option;
-    container->next = NULL;
-    set_fd(container->option->outfile, &container->out_fd);
-    set_fd(container->option->logfile, &container->log_fd);
 
     pthread_mutex_lock(&request_mutex);
-
+    container->option = option;
+    container->next = NULL;
+    if (option->useOut)
+    {
+        container->out_fd = get_fd(option->outfile);
+    }
+    else
+    {
+        container->out_fd = -1;
+    }
+    if (option->useLog)
+    {
+        container->log_fd = get_fd(option->logfile);
+    }
+    else
+    {
+        container->log_fd = -1;
+    }
     if (pending_count == 0)
     {
         requests = container;
@@ -77,10 +90,9 @@ optionContainer_t *get_request()
 
 void handle_request(optionContainer_t *container)
 {
-    options_t *op = container->option;
+    options_server_t *op = container->option;
     if (op != NULL)
     {
-
         char **args = split_string_by_space(op->execCommand, op->execArgc);
         int retval, status;
         int sstate = 1;
@@ -98,12 +110,11 @@ void handle_request(optionContainer_t *container)
         else if (pid == 0) // child process
         {
             close(sfd[0]);
+            // set log output
             if (container->log_fd > 0)
             {
                 dup2(container->log_fd, 1);
             }
-            printf("container %p. option %p. c->op %p\n", &container, &op, &(op->execCommand));
-                    
             print_log("- attempting to execute %s\n", op->execCommand);
 
             // set output redirection
@@ -111,8 +122,8 @@ void handle_request(optionContainer_t *container)
             {
                 dup2(container->out_fd, 1);
                 dup2(1, 2);
-                // if output redirection is not desired, put it back to std
             }
+            // if output redirection is not desired, put it back to std
             else if (container->log_fd > 0 && container->out_fd < 0)
             {
                 dup2(get_stdout_copy_fd(), 1);
@@ -129,6 +140,7 @@ void handle_request(optionContainer_t *container)
             }
             print_log("- could not execute %s\n", op->execCommand);
             close(sfd[1]);
+            exit(1);
         }
         else // parent process
         {
@@ -148,10 +160,12 @@ void handle_request(optionContainer_t *container)
                 }
                 if (sstate == 1)
                 {
-                    printf("PR container %p. option %p. c->op %p\n", &container, &op, &(op->execCommand));
                     print_log("- %s has been executed with pid %d\n", op->execCommand, pid);
                     print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
                 }
+                // set back to stdout/stderr for another child process
+                dup2(get_stdout_copy_fd(), 1);
+                dup2(get_stderr_copy_fd(), 2);
                 close(sfd[0]);
                 close(container->out_fd);
                 close(container->log_fd);
@@ -161,8 +175,6 @@ void handle_request(optionContainer_t *container)
                 print_log("- %d", __LINE__);
             }
         }
-        while (waitpid(-1, NULL, WNOHANG) > 0)
-            ; /* clean up child processes */
     }
 }
 

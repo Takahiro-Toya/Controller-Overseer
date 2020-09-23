@@ -1,5 +1,6 @@
-container 0x700003238f78. option 0x700003238f70. c->op 0x7fcdd79040a8
-2020-9-23 18:56:57 - attempting to execute hello p1
-PR container 0x700003238f78. option 0x700003238f70. c->op 0x7fcdd79040a8
-2020-9-23 18:57:1 - hello p1 has been executed with pid 14709
-2020-9-23 18:57:1 - 14709 has terminated with status code 0
+2020-9-23 22:48:58 - attempting to execute hello p1
+2020-9-23 22:49:2 - hello p1 has been executed with pid 4576
+2020-9-23 22:49:2 - 4576 has terminated with status code 0
+2020-9-23 22:49:54 - attempting to execute hello p1
+2020-9-23 22:49:58 - hello p1 has been executed with pid 4617
+2020-9-23 22:49:58 - 4617 has terminated with status code 0

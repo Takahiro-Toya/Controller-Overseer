@@ -83,13 +83,6 @@ int main(int argc, char *argv[])
     }
 
     send_options(sockfd, options); 
-
-    /* Receive message back from server */
-    numbytes = exRecv(sockfd, buf, MAXDATASIZE, 0);
-
-    buf[numbytes] = '\0';
-
-    printf("Received: %s", buf);
     close(sockfd);
 
     return 0;

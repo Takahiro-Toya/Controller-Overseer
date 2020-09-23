@@ -19,16 +19,17 @@
 
 #define RETURNED_ERROR -1
 
-options_t *receive_options(int socket_id)
+options_server_t *receive_options(int socket_id)
 {
-    options_t *op = malloc(sizeof(options_t));
+    options_server_t *op = malloc(sizeof(options_server_t));
     op->mem = -1;
     op->memkill = -1;
     op->execArgc = -1;
     op->seconds = -1;
+    op->useOut = 0;
+    op->useLog = 0;
     
-    // options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
-    uint16_t hsize, hargc;
+   uint16_t hsize, hargc;
     int numBytes, hsizeint, tbool;
 
     char *discard = (char *)malloc(sizeof(char) * 2);
@@ -51,12 +52,14 @@ options_t *receive_options(int socket_id)
     // receive o file name
     if (hsizeint != 0)
     {
+        op->useOut = 1;
         op->outfile = malloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
         op->outfile[numBytes] = '\0';
     }
     else
     {
+        op->useOut = 0;
         exRecv(socket_id, discard, sizeof(char), 0);
     }
     // receive -log header
@@ -65,12 +68,14 @@ options_t *receive_options(int socket_id)
     // receive log file name
     if (hsizeint != 0)
     {
+        op->useLog = 1;
         op->logfile = malloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op->logfile, sizeof(char) * hsizeint, 0);
         op->logfile[numBytes] = '\0';
     }
     else
     {
+        op->useLog = 0;
         exRecv(socket_id, discard, sizeof(char), 0);
     }
     // receive -t header
@@ -149,19 +154,18 @@ int main(int argc, char *argv[])
         use_fd();
         force_reset();
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
-        options_t *op = receive_options(new_fd);
-            add_request(op);
-        if (!fork())
-        {
-            
-            exSend(new_fd, "Option received\n", 40, 0);
-            exit(0);
-        }
-        else
-        {
-            close(new_fd); /* parent doesn't need this */
-        }
-        while (waitpid(-1, NULL, WNOHANG) > 0)
-            ; /* clean up child processes */
+        options_server_t *op = receive_options(new_fd);
+        close(new_fd);
+        add_request(op);
+        // if (!fork())
+        // {
+        //     exit(0);
+        // }
+        // else
+        // {
+             /* parent doesn't need this */
+        // }
+        // while (waitpid(-1, NULL, WNOHANG) > 0)
+        //     ; /* clean up child processes */
     }
 }

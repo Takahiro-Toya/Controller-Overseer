@@ -1,0 +1,60 @@
+2020-9-23 22:51:45 - attempting to execute hello p1
+2020-9-23 22:51:45 - attempting to execute hello p2
+2020-9-23 22:51:45 - attempting to execute hello p3
+2020-9-23 22:51:49 - hello p1 has been executed with pid 4674
+2020-9-23 22:51:49 - 4674 has terminated with status code 0
+2020-9-23 22:51:49 - hello p3 has been executed with pid 4678
+2020-9-23 22:52:42 - attempting to execute hello p1
+2020-9-23 22:52:42 - attempting to execute hello p2
+2020-9-23 22:52:42 - attempting to execute hello p3
+2020-9-23 22:52:46 - hello p1 has been executed with pid 4717
+2020-9-23 22:52:46 - 4717 has terminated with status code 0
+2020-9-23 22:52:46 - hello p4 has been executed with pid 4722
+2020-9-23 22:52:46 - 4722 has terminated with status code 0
+2020-9-23 22:52:58 - attempting to execute hello p1
+2020-9-23 22:52:58 - attempting to execute hello p2
+2020-9-23 22:52:58 - attempting to execute hello p3
+2020-9-23 22:53:2 - hello p1 has been executed with pid 4734
+2020-9-23 22:53:2 - 4734 has terminated with status code 0
+2020-9-23 22:53:2 - attempting to execute hello4 p6
+2020-9-23 22:53:2 - could not execute hello4 p6
+2020-9-23 22:53:2 - hello p2 has been executed with pid 4736
+2020-9-23 22:53:2 - 4736 has terminated with status code 0
+2020-9-23 22:53:2 - hello p3 has been executed with pid 4738
+2020-9-23 22:53:2 - 4738 has terminated with status code 0
+2020-9-23 22:53:55 - attempting to execute hello p1
+2020-9-23 22:53:55 - attempting to execute hello p2
+2020-9-23 22:53:55 - attempting to execute hello p3
+2020-9-23 22:53:59 - hello p1 has been executed with pid 4759
+2020-9-23 22:53:59 - 4759 has terminated with status code 0
+2020-9-23 22:53:59 - attempting to execute hello
+2020-9-23 22:53:59 - hello p2 has been executed with pid 4761
+2020-9-23 22:53:59 - 4761 has terminated with status code 0
+2020-9-23 22:53:59 - hello has been executed with pid 4772
+2020-9-23 22:53:59 - 4772 has terminated with status code 1
+2020-9-23 22:53:59 - hello p3 has been executed with pid 4763
+2020-9-23 22:53:59 - 4763 has terminated with status code 0
+2020-9-23 22:54:23 - attempting to execute hello p1
+2020-9-23 22:54:23 - attempting to execute hello p2
+2020-9-23 22:54:23 - attempting to execute hello p3
+2020-9-23 22:54:27 - hello p1 has been executed with pid 4817
+2020-9-23 22:54:27 - 4817 has terminated with status code 0
+2020-9-23 22:54:27 - attempting to execute hello
+2020-9-23 22:54:27 - hello has been executed with pid 4842
+2020-9-23 22:54:27 - 4842 has terminated with status code 1
+2020-9-23 22:54:27 - hello p2 has been executed with pid 4819
+2020-9-23 22:54:27 - 4819 has terminated with status code 0
+2020-9-23 22:54:27 - attempting to execute hello p1
+2020-9-23 22:54:27 - attempting to execute hello p2
+2020-9-23 22:54:27 - hello p3 has been executed with pid 4821
+2020-9-23 22:54:27 - 4821 has terminated with status code 0
+2020-9-23 22:54:27 - attempting to execute hello p3
+2020-9-23 22:54:31 - hello p4 has been executed with pid 4846
+2020-9-23 22:54:31 - attempting to execute hello p3
+2020-9-23 22:54:31 - attempting to execute hello p2
+2020-9-23 22:54:31 - attempting to execute hello p1
+2020-9-23 22:54:35 2020-9-23 22:54:35 - hello p1 has been executed with pid 4851
+2020-9-23 22:54:35 - 4851 has terminated with status code 0
+2020-9-23 22:54:35 - attempting to execute hello
+2020-9-23 22:54:35 - hello has been executed with pid 4854
+2020-9-23 22:54:35 - 4854 has terminated with status code 1

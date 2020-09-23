@@ -1,0 +1,6 @@
+2020-9-23 22:48:58 - attempting to execute hello p3
+2020-9-23 22:49:2 - hello p3 has been executed with pid 4580
+2020-9-23 22:49:2 - 4580 has terminated with status code 0
+2020-9-23 22:49:54 - attempting to execute hello p3
+2020-9-23 22:49:58 - hello p3 has been executed with pid 4621
+2020-9-23 22:49:58 - 4621 has terminated with status code 0

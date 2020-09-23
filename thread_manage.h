@@ -1,4 +1,4 @@
-void add_request(options_t *option);
+void add_request(options_server_t *option);
 
 optionContainer_t *get_request();
 
