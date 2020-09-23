@@ -17,6 +17,7 @@ typedef struct
 
 struct optionContainer
 {
+    int log_fd, out_fd;
     options_t *option;
     optionContainer_t *next;
 };

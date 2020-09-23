@@ -13,20 +13,32 @@
 #include "helper.h"
 
 int main () {
+    int status;
 
-
-    char *words = "Hello how are you ?";
-    char **result = split_string_by_space(words, 5);
-    int dfd = dup(1);
-    print_int(dfd);
-    int fd = open("logfile", O_CREAT | O_APPEND | O_WRONLY, 0666);
-    dup2(fd, 1);
-    for (int i = 0; i < 5; i++) {
-        printf("%s\n", result[i]);
+    printf("Before forking\n");
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        int out_fd;
+        int out_fd2;
+        if ((out_fd = open("outfile", O_CREAT | O_APPEND | O_WRONLY, 0666)) < 0)
+        {
+            perror("open outfile");
+            exit(1);
+        }
+        dup2(out_fd, 1);
+        printf("I am in child process and should be in outfile\n");
     }
-
-    dup2(dfd, 1);
-    printf("where am i");
+    else 
+    {
+        if (waitpid(pid, &status, 0) < 0)
+        {
+            fprintf(stderr, "waitpid\n");
+            exit(1);
+        }
+        printf("parent process\n");
+        printf("Where am i ?\n");
+    }
 
     return 0;
 

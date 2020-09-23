@@ -19,9 +19,15 @@
 
 #define RETURNED_ERROR -1
 
-options_t receive_options(int socket_id)
+options_t *receive_options(int socket_id)
 {
-    options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
+    options_t *op = malloc(sizeof(options_t));
+    op->mem = -1;
+    op->memkill = -1;
+    op->execArgc = -1;
+    op->seconds = -1;
+    
+    // options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
     uint16_t hsize, hargc;
     int numBytes, hsizeint, tbool;
 
@@ -31,13 +37,13 @@ options_t receive_options(int socket_id)
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     hsizeint = ntohs(hsize);
     // malloc for filename
-    op.execCommand = malloc(sizeof(char) * hsizeint);
+    op->execCommand = malloc(sizeof(char) * hsizeint);
     // receive number of arguments
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    op.execArgc = ntohs(hsize);
+    op->execArgc = ntohs(hsize);
     // receive file name
-    numBytes = exRecv(socket_id, op.execCommand, sizeof(char) * hsizeint, 0);
-    op.execCommand[numBytes] = '\0';
+    numBytes = exRecv(socket_id, op->execCommand, sizeof(char) * hsizeint, 0);
+    op->execCommand[numBytes] = '\0';
 
     // receive -o header
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
@@ -45,9 +51,9 @@ options_t receive_options(int socket_id)
     // receive o file name
     if (hsizeint != 0)
     {
-        op.outfile = malloc(sizeof(char) * hsizeint);
-        numBytes = exRecv(socket_id, op.outfile, sizeof(char) * hsizeint, 0);
-        op.outfile[numBytes] = '\0';
+        op->outfile = malloc(sizeof(char) * hsizeint);
+        numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
+        op->outfile[numBytes] = '\0';
     }
     else
     {
@@ -59,9 +65,9 @@ options_t receive_options(int socket_id)
     // receive log file name
     if (hsizeint != 0)
     {
-        op.logfile = malloc(sizeof(char) * hsizeint);
-        numBytes = exRecv(socket_id, op.logfile, sizeof(char) * hsizeint, 0);
-        op.logfile[numBytes] = '\0';
+        op->logfile = malloc(sizeof(char) * hsizeint);
+        numBytes = exRecv(socket_id, op->logfile, sizeof(char) * hsizeint, 0);
+        op->logfile[numBytes] = '\0';
     }
     else
     {
@@ -74,7 +80,7 @@ options_t receive_options(int socket_id)
     if (tbool != 0)
     {
         exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-        op.seconds = ntohs(hsize);
+        op->seconds = ntohs(hsize);
     }
     else
     {
@@ -141,16 +147,14 @@ int main(int argc, char *argv[])
             continue;
         }
         use_fd();
-        set_to_default();
+        force_reset();
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
-        options_t op = receive_options(new_fd);
-        add_request(&op);
+        options_t *op = receive_options(new_fd);
+            add_request(op);
         if (!fork())
         {
-       
-            set_to_default();
-            exSend(new_fd, "Options received\n", 40, 0);
-            close(new_fd);
+            
+            exSend(new_fd, "Option received\n", 40, 0);
             exit(0);
         }
         else

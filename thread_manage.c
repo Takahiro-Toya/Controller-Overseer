@@ -32,6 +32,8 @@ void add_request(options_t *option)
     }
     container->option = option;
     container->next = NULL;
+    set_fd(container->option->outfile, &container->out_fd);
+    set_fd(container->option->logfile, &container->log_fd);
 
     pthread_mutex_lock(&request_mutex);
 
@@ -75,18 +77,19 @@ optionContainer_t *get_request()
 
 void handle_request(optionContainer_t *container)
 {
-
-    if (container->option != NULL)
+    options_t *op = container->option;
+    if (op != NULL)
     {
-        fd_init(container->option->outfile, container->option->logfile);
 
-        char **args = split_string_by_space(container->option->execCommand, container->option->execArgc);
+        char **args = split_string_by_space(op->execCommand, op->execArgc);
         int retval, status;
         int sstate = 1;
         int sfd[2];
         pipe(sfd);
+
         // spawn for execution
         pid_t pid = fork();
+
         if (pid < 0)
         {
             fprintf(stderr, "fork");
@@ -95,21 +98,41 @@ void handle_request(optionContainer_t *container)
         else if (pid == 0) // child process
         {
             close(sfd[0]);
-            set_to_log();
-            print_log("- attempting to execute %s\n", container->option->execCommand);
+            if (container->log_fd > 0)
+            {
+                dup2(container->log_fd, 1);
+            }
+            printf("container %p. option %p. c->op %p\n", &container, &op, &(op->execCommand));
+                    
+            print_log("- attempting to execute %s\n", op->execCommand);
 
+            // set output redirection
+            if (container->out_fd > 0)
+            {
+                dup2(container->out_fd, 1);
+                dup2(1, 2);
+                // if output redirection is not desired, put it back to std
+            }
+            else if (container->log_fd > 0 && container->out_fd < 0)
+            {
+                dup2(get_stdout_copy_fd(), 1);
+                dup2(get_stderr_copy_fd(), 2);
+            }
             // execute
-            set_to_out();
             execv(args[0], &args[0]);
             // below ignored if execv succeeded
             sstate = -1;
             write(sfd[1], &sstate, sizeof(sstate));
-            set_to_log();
-            print_log("- could not execute %s\n", container->option->execCommand);
+            if (container->log_fd > 0)
+            {
+                dup2(container->log_fd, 1);
+            }
+            print_log("- could not execute %s\n", op->execCommand);
             close(sfd[1]);
         }
         else // parent process
         {
+
             close(sfd[1]);
             if (waitpid(pid, &status, 0) < 0)
             {
@@ -118,28 +141,36 @@ void handle_request(optionContainer_t *container)
             }
             if (WIFEXITED(status))
             {
-                set_to_log();
                 read(sfd[0], &sstate, sizeof(sstate));
+                if (container->log_fd > 0)
+                {
+                    dup2(container->log_fd, 1);
+                }
                 if (sstate == 1)
                 {
-                    print_log("- %s has been executed with pid %d\n", container->option->execCommand, pid);
+                    printf("PR container %p. option %p. c->op %p\n", &container, &op, &(op->execCommand));
+                    print_log("- %s has been executed with pid %d\n", op->execCommand, pid);
                     print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
                 }
                 close(sfd[0]);
+                close(container->out_fd);
+                close(container->log_fd);
             }
             else
             {
                 print_log("- %d", __LINE__);
             }
         }
+        while (waitpid(-1, NULL, WNOHANG) > 0)
+            ; /* clean up child processes */
     }
 }
 
 void *handle_requests_loop()
 {
-    optionContainer_t *container;
 
     pthread_mutex_lock(&request_mutex);
+    optionContainer_t *container;
 
     while (1)
     {
