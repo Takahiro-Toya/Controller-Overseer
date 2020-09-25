@@ -152,20 +152,10 @@ int main(int argc, char *argv[])
             continue;
         }
         use_fd();
-        force_reset();
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
         options_server_t *op = receive_options(new_fd);
         close(new_fd);
         add_request(op);
-        // if (!fork())
-        // {
-        //     exit(0);
-        // }
-        // else
-        // {
-             /* parent doesn't need this */
-        // }
-        // while (waitpid(-1, NULL, WNOHANG) > 0)
-        //     ; /* clean up child processes */
+
     }
 }

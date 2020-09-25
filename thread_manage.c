@@ -90,91 +90,101 @@ optionContainer_t *get_request()
 
 void handle_request(optionContainer_t *container)
 {
-    options_server_t *op = container->option;
-    if (op != NULL)
+    int outerstatus;
+    
+    pid_t outer_pid = fork();
+    if (outer_pid < 0) {
+        fprintf(stderr, "fork");
+        exit(1);
+    } 
+    else if (outer_pid == 0)
     {
-        char **args = split_string_by_space(op->execCommand, op->execArgc);
-        int retval, status;
-        int sstate = 1;
-        int sfd[2];
-        pipe(sfd);
-
-        // spawn for execution
-        pid_t pid = fork();
-
-        if (pid < 0)
+        options_server_t *op = container->option;
+        if (op != NULL)
         {
-            fprintf(stderr, "fork");
-            exit(1);
-        }
-        else if (pid == 0) // child process
-        {
-            close(sfd[0]);
-            // set log output
+            char **args = split_string_by_space(op->execCommand, op->execArgc);
+            int retval, status;
+            int sstate = 1;
+            int sfd[2];
+            pipe(sfd);
+            // set log redirection
             if (container->log_fd > 0)
             {
                 dup2(container->log_fd, 1);
             }
-            print_log("- attempting to execute %s\n", op->execCommand);
 
-            // set output redirection
-            if (container->out_fd > 0)
-            {
-                dup2(container->out_fd, 1);
-                dup2(1, 2);
-            }
-            // if output redirection is not desired, put it back to std
-            else if (container->log_fd > 0 && container->out_fd < 0)
-            {
-                dup2(get_stdout_copy_fd(), 1);
-                dup2(get_stderr_copy_fd(), 2);
-            }
-            // execute
-            execv(args[0], &args[0]);
-            // below ignored if execv succeeded
-            sstate = -1;
-            write(sfd[1], &sstate, sizeof(sstate));
-            if (container->log_fd > 0)
-            {
-                dup2(container->log_fd, 1);
-            }
-            print_log("- could not execute %s\n", op->execCommand);
-            close(sfd[1]);
-            exit(1);
-        }
-        else // parent process
-        {
+            // spawn for execution
+            pid_t pid = fork();
 
-            close(sfd[1]);
-            if (waitpid(pid, &status, 0) < 0)
+            if (pid < 0)
             {
-                fprintf(stderr, "waitpid");
+                fprintf(stderr, "fork");
                 exit(1);
             }
-            if (WIFEXITED(status))
+            else if (pid == 0) // child process
             {
-                read(sfd[0], &sstate, sizeof(sstate));
+                close(sfd[0]);
+                // set log output
+   
+                print_log("- attempting to execute %s\n", op->execCommand);
+
+                // set output redirection
+                if (container->out_fd > 0)
+                {
+                    dup2(container->out_fd, 1);
+                    dup2(1, 2);
+                }
+                // if output redirection is not desired, put it back to std
+                else if (container->log_fd > 0 && container->out_fd < 0)
+                {
+                    dup2(get_stdout_copy_fd(), 1);
+                    dup2(get_stderr_copy_fd(), 2);
+                }
+                // execute
+                execv(args[0], &args[0]);
+                // below ignored if execv succeeded
+                sstate = -1;
+                write(sfd[1], &sstate, sizeof(sstate));
                 if (container->log_fd > 0)
                 {
                     dup2(container->log_fd, 1);
                 }
-                if (sstate == 1)
-                {
-                    print_log("- %s has been executed with pid %d\n", op->execCommand, pid);
-                    print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
-                }
-                // set back to stdout/stderr for another child process
-                dup2(get_stdout_copy_fd(), 1);
-                dup2(get_stderr_copy_fd(), 2);
-                close(sfd[0]);
-                close(container->out_fd);
-                close(container->log_fd);
+                print_log("- could not execute %s\n", op->execCommand);
+                close(sfd[1]);
+                exit(1);
             }
-            else
+            else // parent process
             {
-                print_log("- %d", __LINE__);
+
+                close(sfd[1]);
+                if (waitpid(pid, &status, 0) < 0)
+                {
+                    fprintf(stderr, "waitpid");
+                    exit(1);
+                }
+                if (WIFEXITED(status))
+                {
+                    read(sfd[0], &sstate, sizeof(sstate));
+          
+                    if (sstate == 1)
+                    {
+                        print_log("- %s has been executed with pid %d\n", op->execCommand, pid);
+                        print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
+                    }
+                    close(sfd[0]);
+                    close(container->out_fd);
+                    close(container->log_fd);
+                    // need to close stdout stderr fd ?
+                    exit(1);
+                }
+                else
+                {
+                    print_log("- %d", __LINE__);
+                }
             }
         }
+    } else {
+        waitpid(outer_pid, &outerstatus, 0);
     }
 }
 
