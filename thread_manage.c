@@ -8,6 +8,7 @@
 #include "thread_manage.h"
 #include "helper.h"
 #include "output_manage.h"
+#include "memory_manage.h"
 
 #define NUM_THREADS 5
 
@@ -22,6 +23,10 @@ int pending_count = 0;
 optionContainer_t *requests = NULL;
 optionContainer_t *last_request = NULL;
 
+/**
+ * Add new request to the requests queue
+ * Critical section inside this function
+*/
 void add_request(options_server_t *option)
 {
     optionContainer_t *container = (optionContainer_t *)malloc(sizeof(optionContainer_t));
@@ -67,6 +72,9 @@ void add_request(options_server_t *option)
     pthread_cond_signal(&got_request);
 }
 
+/*
+ * Get next request (the first element of the linked request)
+ */
 optionContainer_t *get_request()
 {
     optionContainer_t *container;
@@ -88,6 +96,12 @@ optionContainer_t *get_request()
     return container;
 }
 
+/*
+ * Execute request
+ * It calls fork() 2 times
+ *      one for execution 
+ *      another one to prevent another thread to share the file descriptors 
+ */
 void handle_request(optionContainer_t *container)
 {
     int outerstatus;
@@ -188,6 +202,9 @@ void handle_request(optionContainer_t *container)
     }
 }
 
+/*
+ * wait or handle_request in a loop
+ */
 void *handle_requests_loop()
 {
 
@@ -203,7 +220,7 @@ void *handle_requests_loop()
             {
                 pthread_mutex_unlock(&request_mutex);
                 handle_request(container);
-                free(container);
+                free_option_container(container);
                 pthread_mutex_lock(&request_mutex);
             }
         }
@@ -214,6 +231,9 @@ void *handle_requests_loop()
     }
 }
 
+/*
+ * Initialise all threads to the number NUM_THREADS at once.
+ */
 void init_threads()
 {
     pthread_mutex_init(&request_mutex, NULL);

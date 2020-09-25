@@ -37,6 +37,12 @@ void force_reset()
     }
 }
 
+/*
+ * Get a file descriptor for the given file path.
+ * If the file does not exist in the path, then create a new file
+ * returns -1 if the given parameter is NULL
+ * Exit the process if the open file failed
+ */
 int get_fd(char *file)
 {
     int des;
@@ -55,11 +61,17 @@ int get_fd(char *file)
     return des;
 }
 
+/*
+ * get the copy of stdout file descriptor which was set at use_fd() function call
+ */
 int get_stdout_copy_fd()
 {
     return stdout_copy;
 }
 
+/*
+ * get the copy for stderr file descriptor which was set at use_fd() function call
+ */
 int get_stderr_copy_fd()
 {
     return stderr_copy;

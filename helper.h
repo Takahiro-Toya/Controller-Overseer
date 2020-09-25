@@ -1,3 +1,6 @@
+#ifndef HELPER_H
+#define HELPER_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -27,3 +30,5 @@ void print_string(char *string)
 
 
 
+
+#endif

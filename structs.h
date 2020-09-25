@@ -1,3 +1,6 @@
+#ifndef STRUCTS_H
+#define STRUCTS_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -17,7 +20,8 @@ typedef struct
 
 typedef struct
 {
-    int seconds, mem, memkill, execArgc, useOut, useLog;
+    bool useOut, useLog;
+    int seconds, mem, memkill, execArgc;
     char *logfile;
     char *outfile;
     char *execCommand;
@@ -29,3 +33,6 @@ struct optionContainer
     options_server_t *option;
     optionContainer_t *next;
 };
+
+
+#endif

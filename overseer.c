@@ -26,8 +26,8 @@ options_server_t *receive_options(int socket_id)
     op->memkill = -1;
     op->execArgc = -1;
     op->seconds = -1;
-    op->useOut = 0;
-    op->useLog = 0;
+    op->useOut = false;
+    op->useLog = false;
     
    uint16_t hsize, hargc;
     int numBytes, hsizeint, tbool;
@@ -52,14 +52,13 @@ options_server_t *receive_options(int socket_id)
     // receive o file name
     if (hsizeint != 0)
     {
-        op->useOut = 1;
+        op->useOut = true;
         op->outfile = malloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
         op->outfile[numBytes] = '\0';
     }
     else
     {
-        op->useOut = 0;
         exRecv(socket_id, discard, sizeof(char), 0);
     }
     // receive -log header
@@ -68,14 +67,13 @@ options_server_t *receive_options(int socket_id)
     // receive log file name
     if (hsizeint != 0)
     {
-        op->useLog = 1;
+        op->useLog = true;
         op->logfile = malloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op->logfile, sizeof(char) * hsizeint, 0);
         op->logfile[numBytes] = '\0';
     }
     else
     {
-        op->useLog = 0;
         exRecv(socket_id, discard, sizeof(char), 0);
     }
     // receive -t header
@@ -100,7 +98,6 @@ int main(int argc, char *argv[])
     struct sockaddr_in my_addr;
     struct sockaddr_in their_addr;
     socklen_t sin_size;
-    // int i = 0; // ???
 
     if (argc != 2)
     {
