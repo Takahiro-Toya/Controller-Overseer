@@ -14,21 +14,24 @@ void use_htab();
 
 bool htab_init(size_t n);
 
-size_t djb_hash(int num);
+size_t djb_hash(char *s);
 
-size_t htab_index(int parent);
+size_t htab_index(char *key);
 
-parent_pid_t *htab_bucket(int key);
+parent_pid_t *htab_bucket(char *key);
 
-parent_pid_t *htab_find(int key);
+parent_pid_t *htab_find(char *key);
 
-bool htab_add(int parent, int child);
+pid_t getpid_for(pid_t parent);
+
+void htab_print();
+
+void item_print(parent_pid_t *i);
+
+bool htab_add(int key, int value);
 
 void htab_delete(int key);
 
-pid_t get_for(int parent);
-
 void htab_destroy();
-
 
 #endif

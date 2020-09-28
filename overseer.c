@@ -14,6 +14,7 @@
 #include "extensions.h"
 #include "output_manage.h"
 #include "thread_manage.h"
+#include "hashtab.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
@@ -151,6 +152,7 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
+        
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
         options_server_t *op = receive_options(new_fd);
         close(new_fd);

@@ -11,6 +11,7 @@
 #include "helper.h"
 #include "output_manage.h"
 #include "memory_manage.h"
+#include "hashtab.h"
 
 #define NUM_THREADS 5
 
@@ -93,10 +94,14 @@ optionContainer_t *get_request()
     return container;
 }
 
-void timeout_handler(int sig) {
-
-    kill(getpid() + 1, SIGTERM);
-    print_log("- sent SIGTERM to %d\n", getpid() + 1);
+void timeout_handler(int sig)
+{
+    // getpid() + 1 working ONLY for single execution
+    print_int(getpid());
+    printf("%d\n", getpid_for((pid_t)getpid()));
+    // htab_print();
+    // kill(getpid_for(getpid()), SIGTERM);
+    // print_log("- sent SIGTERM to %d\n", getpid_for(getpid()));
 }
 
 /*
@@ -108,18 +113,21 @@ void handle_request(optionContainer_t *container)
     // good to have outer fork here to avoid sharing of file descriptors
     // with other threads (processes)
     pid_t outer_pid = fork();
-    if (outer_pid < 0) {
+    if (outer_pid < 0)
+    {
         exPerror("fork");
-    } 
+    }
     else if (outer_pid == 0)
     {
+
+        
         options_server_t *op = container->option;
         if (op != NULL)
         {
             char **args = split_string_by_space(op->execCommand, op->execArgc);
-            int retval, status;
-            int sstate = 1;
-            int sfd[2];
+            int status;
+            int sstate = 1; // 1 when successfully exited program
+            int sfd[2]; // pipe for sstate
             pipe(sfd);
             // set log redirection
             if (container->log_fd > 0)
@@ -130,16 +138,14 @@ void handle_request(optionContainer_t *container)
             signal(SIGALRM, timeout_handler);
             // spawn for execution
             pid_t exec_pid = fork();
-
             if (exec_pid < 0)
             {
                 exPerror("fork");
             }
             else if (exec_pid == 0) // child process -> replaced by exec
             {
-
                 close(sfd[0]);
-   
+                
                 print_log("- attempting to execute %s\n", op->execCommand);
 
                 // set output redirection
@@ -169,24 +175,25 @@ void handle_request(optionContainer_t *container)
             }
             else // parent process
             {
+
                 close(sfd[1]);
+                // use_htab();
+                htab_add(getpid(), exec_pid);
+                htab_print();
                 alarm(container->option->seconds == -1 ? 10 : container->option->seconds);
                 if (waitpid(exec_pid, &status, 0) < 0)
                 {
                     exPerror("waitpid");
-                } 
+                }
                 if (WIFEXITED(status))
                 {
                     read(sfd[0], &sstate, sizeof(sstate));
-                    
+
                     if (sstate == 1)
                     {
                         print_log("- %s has been executed with pid %d\n", op->execCommand, exec_pid);
                         print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
-                    close(sfd[0]);
-                    close(container->out_fd);
-                    close(container->log_fd);
                     // need to close stdout stderr fd ?
                     exit(1);
                 }
@@ -194,10 +201,23 @@ void handle_request(optionContainer_t *container)
                 {
                     print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                 }
+
+                close(sfd[0]);
+                if (container->out_fd > 0)
+                {
+                    close(container->out_fd);
+                }
+                if (container->log_fd > 0)
+                {
+                    close(container->log_fd);
+                }
             }
         }
-    } else {
-        while (waitpid(-1, NULL, WNOHANG) > 0);
+    }
+    else
+    {
+        while (waitpid(-1, NULL, WNOHANG) > 0)
+            ;
     }
 }
 

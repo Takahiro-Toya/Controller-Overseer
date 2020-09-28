@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
         sleep(1);
     }
 
-    printf("wait for 10 seconds ...\n");
-    sleep(10);
+    printf("wait for 3 seconds ...\n");
+    sleep(3);
     printf("Done!\n");
     return 0;
 }
