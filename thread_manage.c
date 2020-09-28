@@ -4,7 +4,9 @@
 #include <stdlib.h>  /* rand() and srand() functions              */
 #include <time.h>
 #include <unistd.h>
+#include <signal.h>
 #include "structs.h"
+#include "extensions.h"
 #include "thread_manage.h"
 #include "helper.h"
 #include "output_manage.h"
@@ -29,12 +31,7 @@ optionContainer_t *last_request = NULL;
 */
 void add_request(options_server_t *option)
 {
-    optionContainer_t *container = (optionContainer_t *)malloc(sizeof(optionContainer_t));
-    if (!container)
-    {
-        fprintf(stderr, "add_request: out of memory\n");
-        exit(1);
-    }
+    optionContainer_t *container = (optionContainer_t *)exMalloc(sizeof(optionContainer_t));
 
     pthread_mutex_lock(&request_mutex);
     container->option = option;
@@ -96,20 +93,23 @@ optionContainer_t *get_request()
     return container;
 }
 
+void timeout_handler(int sig) {
+
+    kill(getpid() + 1, SIGTERM);
+    print_log("- sent SIGTERM to %d\n", getpid() + 1);
+}
+
 /*
- * Execute request
- * It calls fork() 2 times
- *      one for execution 
- *      another one to prevent another thread to share the file descriptors 
+ * Execute request with two processes
  */
 void handle_request(optionContainer_t *container)
 {
     int outerstatus;
-    
+    // good to have outer fork here to avoid sharing of file descriptors
+    // with other threads (processes)
     pid_t outer_pid = fork();
     if (outer_pid < 0) {
-        fprintf(stderr, "fork");
-        exit(1);
+        exPerror("fork");
     } 
     else if (outer_pid == 0)
     {
@@ -127,18 +127,18 @@ void handle_request(optionContainer_t *container)
                 dup2(container->log_fd, 1);
             }
 
+            signal(SIGALRM, timeout_handler);
             // spawn for execution
-            pid_t pid = fork();
+            pid_t exec_pid = fork();
 
-            if (pid < 0)
+            if (exec_pid < 0)
             {
-                fprintf(stderr, "fork");
-                exit(1);
+                exPerror("fork");
             }
-            else if (pid == 0) // child process
+            else if (exec_pid == 0) // child process -> replaced by exec
             {
+
                 close(sfd[0]);
-                // set log output
    
                 print_log("- attempting to execute %s\n", op->execCommand);
 
@@ -169,21 +169,20 @@ void handle_request(optionContainer_t *container)
             }
             else // parent process
             {
-
                 close(sfd[1]);
-                if (waitpid(pid, &status, 0) < 0)
+                alarm(container->option->seconds == -1 ? 10 : container->option->seconds);
+                if (waitpid(exec_pid, &status, 0) < 0)
                 {
-                    fprintf(stderr, "waitpid");
-                    exit(1);
-                }
+                    exPerror("waitpid");
+                } 
                 if (WIFEXITED(status))
                 {
                     read(sfd[0], &sstate, sizeof(sstate));
-          
+                    
                     if (sstate == 1)
                     {
-                        print_log("- %s has been executed with pid %d\n", op->execCommand, pid);
-                        print_log("- %d has terminated with status code %d\n", pid, WEXITSTATUS(status));
+                        print_log("- %s has been executed with pid %d\n", op->execCommand, exec_pid);
+                        print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
                     close(sfd[0]);
                     close(container->out_fd);
@@ -193,12 +192,12 @@ void handle_request(optionContainer_t *container)
                 }
                 else
                 {
-                    print_log("- %d", __LINE__);
+                    print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                 }
             }
         }
     } else {
-        waitpid(outer_pid, &outerstatus, 0);
+        while (waitpid(-1, NULL, WNOHANG) > 0);
     }
 }
 
@@ -255,12 +254,12 @@ char **split_string_by_space(char *string, int splitnum)
     char copy[strlen(string)];
     strcpy(copy, string);
 
-    char **strarray = (char **)malloc(sizeof(char *) * (splitnum + 1));
+    char **strarray = (char **)exMalloc(sizeof(char *) * (splitnum + 1));
     char *p = strtok(copy, " ");
 
     for (int i = 0; i < splitnum; i++)
     {
-        strarray[i] = (char *)malloc(sizeof(char) * strlen(p));
+        strarray[i] = (char *)exMalloc(sizeof(char) * strlen(p));
         strcpy(strarray[i], p);
         p = strtok(NULL, " ");
     }

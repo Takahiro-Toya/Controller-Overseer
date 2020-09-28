@@ -21,7 +21,8 @@
 
 options_server_t *receive_options(int socket_id)
 {
-    options_server_t *op = malloc(sizeof(options_server_t));
+
+    options_server_t *op = (options_server_t *)exMalloc(sizeof(options_server_t));
     op->mem = -1;
     op->memkill = -1;
     op->execArgc = -1;
@@ -32,13 +33,13 @@ options_server_t *receive_options(int socket_id)
    uint16_t hsize, hargc;
     int numBytes, hsizeint, tbool;
 
-    char *discard = (char *)malloc(sizeof(char) * 2);
+    char *discard = (char *)exMalloc(sizeof(char) * 2);
 
     // receive file name header
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     hsizeint = ntohs(hsize);
     // malloc for filename
-    op->execCommand = malloc(sizeof(char) * hsizeint);
+    op->execCommand = (char *)exMalloc(sizeof(char) * hsizeint);
     // receive number of arguments
     exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     op->execArgc = ntohs(hsize);
@@ -53,7 +54,7 @@ options_server_t *receive_options(int socket_id)
     if (hsizeint != 0)
     {
         op->useOut = true;
-        op->outfile = malloc(sizeof(char) * hsizeint);
+        op->outfile = (char *)exMalloc(sizeof(char) * hsizeint);
         numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
         op->outfile[numBytes] = '\0';
     }
@@ -137,6 +138,8 @@ int main(int argc, char *argv[])
         exPerror("listen");
     }
 
+    use_fd();
+
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
@@ -148,7 +151,6 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        use_fd();
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
         options_server_t *op = receive_options(new_fd);
         close(new_fd);

@@ -1,5 +1,5 @@
-#ifndef STRUCTS_H
-#define STRUCTS_H
+#ifndef _STRUCTS_H
+#define _STRUCTS_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -34,5 +34,19 @@ struct optionContainer
     optionContainer_t *next;
 };
 
+typedef struct parent_pid parent_pid_t;
+struct parent_pid
+{
+    int parent;
+    int child;
+    parent_pid_t *next;
+};
+
+typedef struct htab htab_t;
+struct htab
+{
+    parent_pid_t **buckets;
+    size_t size;
+};
 
 #endif

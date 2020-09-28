@@ -8,39 +8,24 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "usage.h"
-#include "extensions.h"
-#include "helper.h"
+#include "hashtab.h"
 
-int main () {
-    int status;
+int main()
+{
 
-    printf("Before forking\n");
-    pid_t pid = fork();
-    if (pid == 0)
-    {
-        int out_fd;
-        int out_fd2;
-        if ((out_fd = open("outfile", O_CREAT | O_APPEND | O_WRONLY, 0666)) < 0)
-        {
-            perror("open outfile");
-            exit(1);
-        }
-        dup2(out_fd, 1);
-        printf("I am in child process and should be in outfile\n");
-    }
-    else 
-    {
-        if (waitpid(pid, &status, 0) < 0)
-        {
-            fprintf(stderr, "waitpid\n");
-            exit(1);
-        }
-        printf("parent process\n");
-        printf("Where am i ?\n");
-    }
+    use_htab();
+    
+    htab_add(10, 11);
+    htab_add(12, 13);
+    htab_add(14, 15);
+    htab_add(16, 17);
+    htab_add(18, 19);
+    htab_add(20, 21);
 
+    printf("%d\n", get_for(10));
+    printf("%d\n", get_for(18));
+
+    htab_delete(14);
+    printf("%d\n", get_for(14));
     return 0;
-
 }
-

@@ -4,11 +4,11 @@ LDFLAGS =
 
 all: overseer controller
 
-overseer: overseer.c output_manage.c thread_manage.c
-	$(CC) overseer.c output_manage.c thread_manage.c -o overseer
+overseer: overseer.c output_manage.c thread_manage.c extensions.c
+	$(CC) overseer.c output_manage.c thread_manage.c extensions.c -o overseer
 
-controller: controller.c
-	$(CC) -o controller controller.c
+controller: controller.c usage.c
+	$(CC) controller.c usage.c extensions.c -o controller
 
 clean:
 	rm -f *.o

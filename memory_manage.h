@@ -1,3 +1,5 @@
+#ifndef _MEMORY_MANAGEMENT_H
+#define _MEMORY_MANAGEMENT_H
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -19,3 +21,6 @@ void free_option_container(optionContainer_t *container)
     free(container->option);
     free(container);
 }
+
+#endif
+

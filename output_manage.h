@@ -9,7 +9,6 @@ int get_stdout_copy_fd();
 
 int get_stderr_copy_fd();
 
-
 void print_log(const char *format, ...);
 
 void timestamp();
