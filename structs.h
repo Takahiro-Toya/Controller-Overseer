@@ -34,21 +34,4 @@ struct optionContainer
     optionContainer_t *next;
 };
 
-
-typedef struct parent_pid parent_pid_t;
-struct parent_pid
-{
-    char *key;
-    int value;
-    parent_pid_t *next;
-};
-
-
-typedef struct htab htab_t;
-struct htab
-{
-    parent_pid_t **buckets;
-    size_t size;
-};
-
 #endif

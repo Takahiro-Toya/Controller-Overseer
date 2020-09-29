@@ -14,7 +14,6 @@
 #include "extensions.h"
 #include "output_manage.h"
 #include "thread_manage.h"
-#include "hashtab.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 

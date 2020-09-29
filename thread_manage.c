@@ -11,7 +11,7 @@
 #include "helper.h"
 #include "output_manage.h"
 #include "memory_manage.h"
-#include "hashtab.h"
+#include "setjmp.h"
 
 #define NUM_THREADS 5
 
@@ -94,15 +94,8 @@ optionContainer_t *get_request()
     return container;
 }
 
-void timeout_handler(int sig)
-{
-    // getpid() + 1 working ONLY for single execution
-    print_int(getpid());
-    printf("%d\n", getpid_for((pid_t)getpid()));
-    // htab_print();
-    // kill(getpid_for(getpid()), SIGTERM);
-    // print_log("- sent SIGTERM to %d\n", getpid_for(getpid()));
-}
+
+static jmp_buf env;
 
 /*
  * Execute request with two processes
@@ -119,14 +112,13 @@ void handle_request(optionContainer_t *container)
     }
     else if (outer_pid == 0)
     {
-
-        
+        pid_t childpid_ref;
         options_server_t *op = container->option;
         if (op != NULL)
         {
             char **args = split_string_by_space(op->execCommand, op->execArgc);
             int status;
-            int sstate = 1; // 1 when successfully exited program
+            int sstate = 1; // success status of the exec program
             int sfd[2]; // pipe for sstate
             pipe(sfd);
             // set log redirection
@@ -135,7 +127,8 @@ void handle_request(optionContainer_t *container)
                 dup2(container->log_fd, 1);
             }
 
-            signal(SIGALRM, timeout_handler);
+            
+            
             // spawn for execution
             pid_t exec_pid = fork();
             if (exec_pid < 0)
@@ -154,7 +147,8 @@ void handle_request(optionContainer_t *container)
                     dup2(container->out_fd, 1);
                     dup2(1, 2);
                 }
-                // if output redirection is not desired, put it back to std
+                // if output redirection is not desired, but due to log output,
+                // put it back to std
                 else if (container->log_fd > 0 && container->out_fd < 0)
                 {
                     dup2(get_stdout_copy_fd(), 1);
@@ -175,12 +169,14 @@ void handle_request(optionContainer_t *container)
             }
             else // parent process
             {
-
-                close(sfd[1]);
-                // use_htab();
-                htab_add(getpid(), exec_pid);
-                htab_print();
                 alarm(container->option->seconds == -1 ? 10 : container->option->seconds);
+                signal(SIGALRM, timeout_handler);
+                if (sigsetjmp(env, 1)) {
+                    alarm(0);
+                    signal(SIGALRM, SIG_DFL);
+                    kill(exec_pid, SIGTERM);
+                }
+                close(sfd[1]);
                 if (waitpid(exec_pid, &status, 0) < 0)
                 {
                     exPerror("waitpid");
@@ -197,19 +193,22 @@ void handle_request(optionContainer_t *container)
                     // need to close stdout stderr fd ?
                     exit(1);
                 }
-                else
+                if (WTERMSIG(status)) 
                 {
-                    print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
+                    print_log("- sent SIGTERM to %d\n", exec_pid);
+                    print_log("- SIGNALED %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                 }
-
+                alarm(0);
+                signal(SIGALRM, SIG_DFL);
                 close(sfd[0]);
-                if (container->out_fd > 0)
-                {
-                    close(container->out_fd);
-                }
+
                 if (container->log_fd > 0)
                 {
                     close(container->log_fd);
+                }
+                if (container->out_fd > 0)
+                {
+                    close(container->out_fd);
                 }
             }
         }
@@ -219,6 +218,11 @@ void handle_request(optionContainer_t *container)
         while (waitpid(-1, NULL, WNOHANG) > 0)
             ;
     }
+}
+
+void timeout_handler(int sig)
+{
+    siglongjmp(env, 1);
 }
 
 /*
