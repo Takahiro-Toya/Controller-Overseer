@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <time.h>
+#include <signal.h>
+#include "setjmp.h"
 #include "structs.h"
 #include "extensions.h"
 #include "output_manage.h"
@@ -90,7 +92,14 @@ options_server_t *receive_options(int socket_id)
     {
         exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
     }
+    free(discard);
     return op;
+}
+
+static jmp_buf env;
+void sigint_handler_o(int sig)
+{
+    siglongjmp(env, 3);
 }
 
 int main(int argc, char *argv[])
@@ -138,6 +147,11 @@ int main(int argc, char *argv[])
         exPerror("listen");
     }
 
+    struct sigaction sa;
+    memset(&sa, '\0', sizeof(char));
+    sa.sa_handler = &sigint_handler_o;
+    sigaction(SIGINT, &sa, NULL);
+
     use_fd();
 
     /* repeat: accept, send, close the connection */
@@ -151,11 +165,16 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
+        if (sigsetjmp(env, 3) != 0)
+        {
+            printf("%d\n", __LINE__);
+            break;
+        }
         
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
         options_server_t *op = receive_options(new_fd);
         close(new_fd);
         add_request(op);
-
+        
     }
 }

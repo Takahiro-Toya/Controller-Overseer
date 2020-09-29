@@ -94,7 +94,6 @@ optionContainer_t *get_request()
     return container;
 }
 
-
 static jmp_buf env;
 
 /*
@@ -102,6 +101,10 @@ static jmp_buf env;
  */
 void handle_request(optionContainer_t *container)
 {
+    // struct sigaction sa;
+    // memset(&sa, '\0', sizeof(char));
+    // sa.sa_handler = &sigint_handler;
+    // sigaction(SIGINT, &sa, NULL);
     int outerstatus;
     // good to have outer fork here to avoid sharing of file descriptors
     // with other threads (processes)
@@ -119,16 +122,13 @@ void handle_request(optionContainer_t *container)
             char **args = split_string_by_space(op->execCommand, op->execArgc);
             int status;
             int sstate = 1; // success status of the exec program
-            int sfd[2]; // pipe for sstate
+            int sfd[2];     // pipe for sstate
             pipe(sfd);
             // set log redirection
             if (container->log_fd > 0)
             {
                 dup2(container->log_fd, 1);
             }
-
-            
-            
             // spawn for execution
             pid_t exec_pid = fork();
             if (exec_pid < 0)
@@ -138,7 +138,7 @@ void handle_request(optionContainer_t *container)
             else if (exec_pid == 0) // child process -> replaced by exec
             {
                 close(sfd[0]);
-                
+
                 print_log("- attempting to execute %s\n", op->execCommand);
 
                 // set output redirection
@@ -151,8 +151,7 @@ void handle_request(optionContainer_t *container)
                 // put it back to std
                 else if (container->log_fd > 0 && container->out_fd < 0)
                 {
-                    dup2(get_stdout_copy_fd(), 1);
-                    dup2(get_stderr_copy_fd(), 2);
+                    force_reset();
                 }
                 // execute
                 execv(args[0], &args[0]);
@@ -169,18 +168,37 @@ void handle_request(optionContainer_t *container)
             }
             else // parent process
             {
+                close(sfd[1]);
                 alarm(container->option->seconds == -1 ? 10 : container->option->seconds);
                 signal(SIGALRM, timeout_handler);
-                if (sigsetjmp(env, 1)) {
+                int terminate_success = 0;
+                if (sigsetjmp(env, 1) != 0)
+                {
                     alarm(0);
                     signal(SIGALRM, SIG_DFL);
-                    kill(exec_pid, SIGTERM);
+                    if (kill(exec_pid, SIGTERM) != 0)
+                    {
+                        alarm(5);
+                        signal(SIGALRM, timeout_handler_f);
+                        if (sigsetjmp(env, 2))
+                        {
+                            alarm(0);
+                            signal(SIGALRM, SIG_DFL);
+                            kill(exec_pid, SIGKILL);
+                        }
+                    }
+                    else
+                    {
+                        terminate_success = 1;
+                    }
                 }
-                close(sfd[1]);
+
+                // wait for execution child
                 if (waitpid(exec_pid, &status, 0) < 0)
                 {
                     exPerror("waitpid");
                 }
+                // exited
                 if (WIFEXITED(status))
                 {
                     read(sfd[0], &sstate, sizeof(sstate));
@@ -190,18 +208,33 @@ void handle_request(optionContainer_t *container)
                         print_log("- %s has been executed with pid %d\n", op->execCommand, exec_pid);
                         print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
-                    // need to close stdout stderr fd ?
                     exit(1);
                 }
-                if (WTERMSIG(status)) 
+                // signaled
+                if (WIFSIGNALED(status))
                 {
-                    print_log("- sent SIGTERM to %d\n", exec_pid);
-                    print_log("- SIGNALED %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
+                    if (WTERMSIG(status) == SIGINT)
+                    {
+                        printf("%d\n", __LINE__);
+                    }
+                    else if (WTERMSIG(status) == SIGTERM)
+                    {
+                        print_log("- sent SIGTERM to %d\n", exec_pid);
+                    }
+                    else if (WTERMSIG(status) == SIGKILL)
+                    {
+                        print_log("- sent SIGKILL to %d\n", exec_pid);
+                    }
+                    if (terminate_success == 1)
+                    {
+                        print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
+                    }
                 }
                 alarm(0);
                 signal(SIGALRM, SIG_DFL);
                 close(sfd[0]);
-
+                // close descriptor
+                close_std_copy();
                 if (container->log_fd > 0)
                 {
                     close(container->log_fd);
@@ -213,10 +246,24 @@ void handle_request(optionContainer_t *container)
             }
         }
     }
+    // outer fork
     else
     {
-        while (waitpid(-1, NULL, WNOHANG) > 0)
-            ;
+        // if (sigsetjmp(env, 3) != 0)
+        // {
+        //     kill(outer_pid, SIGKILL);
+        //     printf("%d\n", __LINE__);
+        //     printf("%d\n", __LINE__);
+        //     free_all_requests(requests);
+        //     if (last_request!= NULL) {
+        //         free_option_container(last_request);
+        //     }
+        //     cancel_all_threads();
+        // }
+        if (waitpid(-1, &outerstatus, WNOHANG) < 0)
+        {
+            exPerror("waitpid");
+        }
     }
 }
 
@@ -225,6 +272,15 @@ void timeout_handler(int sig)
     siglongjmp(env, 1);
 }
 
+void timeout_handler_f(int sig)
+{
+    siglongjmp(env, 2);
+}
+
+void sigint_handler(int sig)
+{
+    siglongjmp(env, 3);
+}
 /*
  * wait or handle_request in a loop
  */
@@ -265,6 +321,14 @@ void init_threads()
     for (int i = 0; i < NUM_THREADS; i++)
     {
         pthread_create(&threads[i], NULL, handle_requests_loop, NULL);
+    }
+}
+
+void cancel_all_threads()
+{
+    for (int i = 0; i < NUM_THREADS; i++)
+    {
+        pthread_cancel(threads[i]);
     }
 }
 

@@ -37,6 +37,11 @@ void force_reset()
     }
 }
 
+void close_std_copy() {
+    close(stdout_copy);
+    close(stderr_copy);
+}
+
 /*
  * Get a file descriptor for the given file path.
  * If the file does not exist in the path, then create a new file

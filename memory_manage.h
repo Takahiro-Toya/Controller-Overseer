@@ -22,5 +22,11 @@ void free_option_container(optionContainer_t *container)
     free(container);
 }
 
+void free_all_requests(optionContainer_t *requests) {
+    for (optionContainer_t *c = requests; c != NULL; c = c->next) {
+        free_option_container(c);
+    }
+}
+
 #endif
 

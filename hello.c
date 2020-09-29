@@ -10,19 +10,28 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
+
+
 
 int main(int argc, char *argv[]) {
+
+    // signal(SIGTERM, SIG_IGN);
+    // signal(SIGINT, SIG_IGN);
 
     if (argc < 2) {
         fprintf(stderr, "usage : ./hello <name> ...\n");
         return 1;
     }
+
     
     for (int i = 1; i < argc ; i++) {
         
         printf("Hello! %s\n", argv[i]);
         sleep(1);
     }
+
+    
 
     printf("wait for 3 seconds ...\n");
     sleep(3);
