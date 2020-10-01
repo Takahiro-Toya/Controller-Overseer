@@ -95,6 +95,7 @@ optionContainer_t *get_request()
 }
 
 static jmp_buf env;
+static jmp_buf env2;
 
 /*
  * Execute request with two processes
@@ -176,21 +177,17 @@ void handle_request(optionContainer_t *container)
                 {
                     alarm(0);
                     signal(SIGALRM, SIG_DFL);
-                    if (kill(exec_pid, SIGTERM) != 0)
+                    kill(exec_pid, SIGTERM);
+                    print_log("- sent SIGTERM to %d\n", exec_pid);
+                    alarm(5);
+                    signal(SIGALRM, timeout_handler_f);
+                    if (sigsetjmp(env2, 1) != 0)
                     {
-                        alarm(5);
-                        signal(SIGALRM, timeout_handler_f);
-                        if (sigsetjmp(env, 2))
-                        {
-                            alarm(0);
-                            signal(SIGALRM, SIG_DFL);
-                            kill(exec_pid, SIGKILL);
-                        }
+                        alarm(0);
+                        signal(SIGALRM, SIG_DFL);
+                        kill(exec_pid, SIGKILL);
                     }
-                    else
-                    {
-                        terminate_success = 1;
-                    }
+
                 }
 
                 // wait for execution child
@@ -208,26 +205,18 @@ void handle_request(optionContainer_t *container)
                         print_log("- %s has been executed with pid %d\n", op->execCommand, exec_pid);
                         print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
-                    exit(1);
+                    exit(EXIT_SUCCESS);
                 }
-                // signaled
+                // signaled and terminated
                 if (WIFSIGNALED(status))
                 {
-                    if (WTERMSIG(status) == SIGINT)
+                    if (WTERMSIG(status) == SIGTERM)
                     {
-                        printf("%d\n", __LINE__);
-                    }
-                    else if (WTERMSIG(status) == SIGTERM)
-                    {
-                        print_log("- sent SIGTERM to %d\n", exec_pid);
+                        print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
                     else if (WTERMSIG(status) == SIGKILL)
                     {
                         print_log("- sent SIGKILL to %d\n", exec_pid);
-                    }
-                    if (terminate_success == 1)
-                    {
-                        print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
                 }
                 alarm(0);
@@ -249,17 +238,6 @@ void handle_request(optionContainer_t *container)
     // outer fork
     else
     {
-        // if (sigsetjmp(env, 3) != 0)
-        // {
-        //     kill(outer_pid, SIGKILL);
-        //     printf("%d\n", __LINE__);
-        //     printf("%d\n", __LINE__);
-        //     free_all_requests(requests);
-        //     if (last_request!= NULL) {
-        //         free_option_container(last_request);
-        //     }
-        //     cancel_all_threads();
-        // }
         if (waitpid(-1, &outerstatus, WNOHANG) < 0)
         {
             exPerror("waitpid");
@@ -274,13 +252,9 @@ void timeout_handler(int sig)
 
 void timeout_handler_f(int sig)
 {
-    siglongjmp(env, 2);
+    siglongjmp(env2, 1);
 }
 
-void sigint_handler(int sig)
-{
-    siglongjmp(env, 3);
-}
 /*
  * wait or handle_request in a loop
  */

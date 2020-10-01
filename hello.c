@@ -16,8 +16,9 @@
 
 int main(int argc, char *argv[]) {
 
-    // signal(SIGTERM, SIG_IGN);
-    // signal(SIGINT, SIG_IGN);
+    if (strcmp(argv[1], "taka") == 0) {
+        signal(SIGTERM, SIG_IGN);
+    } 
 
     if (argc < 2) {
         fprintf(stderr, "usage : ./hello <name> ...\n");
