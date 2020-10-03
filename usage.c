@@ -16,7 +16,7 @@ void print_usage_error()
 options_t getControllerInitCommand(int argc, char *argv[])
 {
 
-    options_t op = {1, -1, -1, -1, 1, NULL, NULL, NULL};
+    options_t op = {FileExec, 1, -1, -1, -1, 1, NULL, NULL, NULL};
 
     // print usage to stdout
     if (strcmp(argv[1], "--help") == 0)
@@ -37,13 +37,15 @@ options_t getControllerInitCommand(int argc, char *argv[])
     // mem option
     if (strcmp(argv[3], "mem") == 0)
     {
+        
         if (argc < 5)
         {
-            printf("mem option without pid\n");
+            op.type = Mem;
         }
         else
         {
-            printf("mem option with [pid] = %d\n", atoi(argv[4]));
+            op.type = MemWithPid;
+            op.mempid = atoi(argv[4]);
         }
     }
     // memkill option
@@ -56,12 +58,14 @@ options_t getControllerInitCommand(int argc, char *argv[])
         }
         else
         {
-            printf("memkill option with <percent> = %d\n", atoi(argv[4]));
+            op.type = Memkill;
+            op.memkill = atoi(argv[4]);
         }
     }
     // other options
     else
     {
+
         int i = 3;
         bool o = false;
         bool l = false;
@@ -143,7 +147,8 @@ options_t getControllerInitCommand(int argc, char *argv[])
                 break;
             }
         } // while loop
-    }     // else
+        op.type = FileExec;
+    } // else
 
     return op;
 }

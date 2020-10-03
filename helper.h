@@ -14,14 +14,14 @@
 
 
 /*
- * printf int
+ * printf int, to debug
  */
 void print_int(int i)
 {
     printf("%d\n", i);
 }
 /*
- * printf string
+ * printf string, to debug
  */
 void print_string(char *string)
 {

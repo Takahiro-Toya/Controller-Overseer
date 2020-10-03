@@ -16,84 +16,138 @@
 #include "extensions.h"
 #include "output_manage.h"
 #include "thread_manage.h"
+#include "mem_regulation.h"
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
 #define RETURNED_ERROR -1
 
+saved_request_t *saved_head;
+int next_id = 1;
+
+int save_request(char *file_args)
+{
+    saved_request_t *new = exMalloc(sizeof(saved_request_t));
+    new->request_id = next_id;
+    new->file_args = file_args;
+    if (saved_head == NULL)
+    {
+        saved_head = exMalloc(sizeof(saved_request_t));
+        saved_head->next = NULL;
+        saved_head = new;
+    }
+    else
+    {
+        new->next = saved_head;
+        saved_head = new;
+    }
+    return next_id++;
+}
+
 options_server_t *receive_options(int socket_id)
 {
-
     options_server_t *op = (options_server_t *)exMalloc(sizeof(options_server_t));
-    op->mem = -1;
+
+    op->type = FileExec;
+    op->request_id = -1;
+    op->mempid = -1;
     op->memkill = -1;
     op->execArgc = -1;
     op->seconds = -1;
     op->useOut = false;
     op->useLog = false;
-    
-   uint16_t hsize, hargc;
-    int numBytes, hsizeint, tbool;
 
-    char *discard = (char *)exMalloc(sizeof(char) * 2);
+    uint16_t recved;
 
-    // receive file name header
-    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    hsizeint = ntohs(hsize);
-    // malloc for filename
-    op->execCommand = (char *)exMalloc(sizeof(char) * hsizeint);
-    // receive number of arguments
-    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    op->execArgc = ntohs(hsize);
-    // receive file name
-    numBytes = exRecv(socket_id, op->execCommand, sizeof(char) * hsizeint, 0);
-    op->execCommand[numBytes] = '\0';
+    // receive headers
+    // receive option type
+    exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+    op->type = ntohs(recved);
 
-    // receive -o header
-    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    hsizeint = ntohs(hsize);
-    // receive o file name
-    if (hsizeint != 0)
+    if (op->type == Mem)
     {
-        op->useOut = true;
-        op->outfile = (char *)exMalloc(sizeof(char) * hsizeint);
-        numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
-        op->outfile[numBytes] = '\0';
+        return op;
+    }
+    else if (op->type == MemWithPid)
+    {
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        op->mempid = ntohs(recved);
+        return op;
+    }
+    else if (op->type == Memkill)
+    {
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        op->memkill = ntohs(recved);
+        return op;
+    }
+    else if (op->type == FileExec)
+    {
+        int numBytes, hsizeint, tbool;
+        char *discard = (char *)exMalloc(sizeof(char) * 2);
+
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        hsizeint = ntohs(recved);
+        // malloc for filename
+        op->execCommand = (char *)exMalloc(sizeof(char) * hsizeint);
+        // receive number of arguments
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        op->execArgc = ntohs(recved);
+        // receive commands
+        numBytes = exRecv(socket_id, op->execCommand, sizeof(char) * hsizeint, 0);
+        op->execCommand[numBytes] = '\0';
+
+        // receive -o header
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        hsizeint = ntohs(recved);
+        // receive o file name
+        if (hsizeint != 0)
+        {
+            op->useOut = true;
+            op->outfile = (char *)exMalloc(sizeof(char) * hsizeint);
+            numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
+            op->outfile[numBytes] = '\0';
+        }
+        else
+        {
+            exRecv(socket_id, discard, sizeof(char), 0);
+        }
+        // receive -log header
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        hsizeint = ntohs(recved);
+        // receive log file name
+        if (hsizeint != 0)
+        {
+            op->useLog = true;
+            op->logfile = malloc(sizeof(char) * hsizeint);
+            numBytes = exRecv(socket_id, op->logfile, sizeof(char) * hsizeint, 0);
+            op->logfile[numBytes] = '\0';
+        }
+        else
+        {
+            exRecv(socket_id, discard, sizeof(char), 0);
+        }
+        // receive -t header
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        tbool = ntohs(recved);
+        // receive -t val
+        if (tbool != 0)
+        {
+            exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+            op->seconds = ntohs(recved);
+        }
+        else
+        {
+            exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        }
+        free(discard);
+        return op;
     }
     else
     {
-        exRecv(socket_id, discard, sizeof(char), 0);
+        fprintf(stderr, "Undefined option type");
+        exit(EXIT_FAILURE);
+        return op;
     }
-    // receive -log header
-    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    hsizeint = ntohs(hsize);
-    // receive log file name
-    if (hsizeint != 0)
-    {
-        op->useLog = true;
-        op->logfile = malloc(sizeof(char) * hsizeint);
-        numBytes = exRecv(socket_id, op->logfile, sizeof(char) * hsizeint, 0);
-        op->logfile[numBytes] = '\0';
-    }
-    else
-    {
-        exRecv(socket_id, discard, sizeof(char), 0);
-    }
-    // receive -t header
-    exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    tbool = ntohs(hsize);
-    // receive -t val
-    if (tbool != 0)
-    {
-        exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-        op->seconds = ntohs(hsize);
-    }
-    else
-    {
-        exRecv(socket_id, &hsize, sizeof(uint16_t), 0);
-    }
-    free(discard);
-    return op;
 }
 
 static jmp_buf env;
@@ -158,23 +212,50 @@ int main(int argc, char *argv[])
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
     { /* main accept() loop */
+        
         sin_size = sizeof(struct sockaddr_in);
         if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
-                             &sin_size)) == -1)
+                            &sin_size)) == -1)
         {
             perror("accept");
             continue;
         }
         if (sigsetjmp(env, 3) != 0)
         {
-            printf("%d\n", __LINE__);
+            close(new_fd);
             break;
         }
         
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
+
         options_server_t *op = receive_options(new_fd);
-        close(new_fd);
-        add_request(op);
         
+        if (op->type == Mem)
+        {
+            print_log(" - mem without pid %d\n", op->mempid);
+        }
+        else if (op->type == MemWithPid)
+        {
+            print_log(" - Mem with pid %d\n", op->mempid);
+            print_mem_for_pid(op->mempid);
+        }
+        else if (op->type == Memkill)
+        {
+            print_log(" - Memkill %d\n", op->memkill);
+        }
+        else if (op->type == FileExec)
+        {
+            int id = save_request(op->execCommand);
+            op->request_id = id;
+            add_request(op);
+            close(new_fd);
+        }
+        else
+        {
+            close(new_fd);
+            fprintf(stderr, "Undefined option type");
+            exit(EXIT_FAILURE);
+        }
+
     }
 }

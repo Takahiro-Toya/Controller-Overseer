@@ -19,12 +19,42 @@
 pthread_mutex_t request_mutex;
 pthread_cond_t got_request;
 
+pthread_mutex_t mem_request_mutex;
+pthread_mutex_t save_request_mutex;
+
 // thread trackers
 pthread_t threads[NUM_THREADS];
 int pending_count = 0;
 
 optionContainer_t *requests = NULL;
 optionContainer_t *last_request = NULL;
+
+mem_entry_t *mem_head;
+
+
+void request_add_entry(pid_t pid, int id) {
+    pthread_mutex_lock(&mem_request_mutex);
+    mem_entry_t *new = exMalloc(sizeof(mem_entry_t));
+    new->id = id;
+    new->pid = pid;
+    new->bytes = 0;
+    new->time = get_formatted_time();
+    if (mem_head == NULL) {
+        mem_head = exMalloc(sizeof(mem_entry_t));
+        new->next = NULL;
+        mem_head = new;
+    } else {
+        new->next = mem_head;
+        mem_head = new;
+    }
+    pthread_mutex_unlock(&mem_request_mutex);
+}
+
+mem_entry_t *get_all_mem_entries() {
+    return mem_head;
+}
+
+
 
 /**
  * Add new request to the requests queue
@@ -68,7 +98,7 @@ void add_request(options_server_t *option)
 
     pthread_mutex_unlock(&request_mutex);
     pthread_cond_signal(&got_request);
-}
+}   
 
 /*
  * Get next request (the first element of the linked request)
@@ -102,10 +132,6 @@ static jmp_buf env2;
  */
 void handle_request(optionContainer_t *container)
 {
-    // struct sigaction sa;
-    // memset(&sa, '\0', sizeof(char));
-    // sa.sa_handler = &sigint_handler;
-    // sigaction(SIGINT, &sa, NULL);
     int outerstatus;
     // good to have outer fork here to avoid sharing of file descriptors
     // with other threads (processes)
@@ -186,15 +212,22 @@ void handle_request(optionContainer_t *container)
                         alarm(0);
                         signal(SIGALRM, SIG_DFL);
                         kill(exec_pid, SIGKILL);
+                        print_log("- sent SIGKILL to %d\n", exec_pid);
                     }
 
                 }
 
                 // wait for execution child
-                if (waitpid(exec_pid, &status, 0) < 0)
-                {
-                    exPerror("waitpid");
+                int wait;
+                while ((wait = waitpid(exec_pid, &status, WNOHANG)) == 0) {
+                    sleep(1);
+                    request_add_entry(exec_pid, op->request_id);
+                    print_log("ID: %d PID: %d\n", mem_head->id, mem_head->pid);
+                } 
+                if (wait < 0) {
+                    exPerror("wait");
                 }
+
                 // exited
                 if (WIFEXITED(status))
                 {
@@ -213,10 +246,6 @@ void handle_request(optionContainer_t *container)
                     if (WTERMSIG(status) == SIGTERM)
                     {
                         print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
-                    }
-                    else if (WTERMSIG(status) == SIGKILL)
-                    {
-                        print_log("- sent SIGKILL to %d\n", exec_pid);
                     }
                 }
                 alarm(0);

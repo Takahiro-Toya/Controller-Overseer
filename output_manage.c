@@ -66,21 +66,7 @@ int get_fd(char *file)
     return des;
 }
 
-/*
- * get the copy of stdout file descriptor which was set at use_fd() function call
- */
-int get_stdout_copy_fd()
-{
-    return stdout_copy;
-}
 
-/*
- * get the copy for stderr file descriptor which was set at use_fd() function call
- */
-int get_stderr_copy_fd()
-{
-    return stderr_copy;
-}
 
 /*
  * printf timestamp Y-M-d h-m-s
@@ -88,8 +74,18 @@ int get_stderr_copy_fd()
 void timestamp()
 {
     time_t t = time(NULL);
-    struct tm *local = localtime(&t);
-    printf("%d-%d-%d %d:%d:%d ", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min, local->tm_sec);
+    struct tm *locale = localtime(&t);
+    printf("%d-%d-%d %d:%d:%d ", locale->tm_year + 1900, locale->tm_mon + 1, locale->tm_mday, locale->tm_hour, locale->tm_min, locale->tm_sec);
+}
+
+char *get_formatted_time()
+{
+    char *time_buf;
+    time_buf = malloc(sizeof(char) * 20);
+    time_t t = time(NULL);
+    struct tm *locale = localtime(&t);
+    sprintf(time_buf, "%d-%d-%d %d:%d:%d", locale->tm_year + 1900, locale->tm_mon + 1, locale->tm_mday, locale->tm_hour, locale->tm_min, locale->tm_sec);
+    return time_buf;
 }
 
 /*
