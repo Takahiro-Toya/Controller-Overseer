@@ -16,7 +16,7 @@ void print_usage_error()
 options_t getControllerInitCommand(int argc, char *argv[])
 {
 
-    options_t op = {FileExec, 1, -1, -1, -1, 1, NULL, NULL, NULL};
+    options_t op = {FileExec, 1, -1, -1, 1, -1.0, NULL, NULL, NULL};
 
     // print usage to stdout
     if (strcmp(argv[1], "--help") == 0)
@@ -59,7 +59,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
         else
         {
             op.type = Memkill;
-            op.memkill = atoi(argv[4]);
+            op.memkill = (int)(atof(argv[4]) * 100.0) / 100.0;
         }
     }
     // other options

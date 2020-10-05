@@ -23,6 +23,7 @@
 #define RETURNED_ERROR -1
 
 #define LOGTIME_SIZE 25
+#define FLOAT_MAX 6
 
 saved_request_t *saved_head;
 int current_id = 0;
@@ -55,7 +56,7 @@ options_server_t *receive_options(int socket_id)
     op->type = FileExec;
     op->request_id = -1;
     op->mempid = -1;
-    op->memkill = -1;
+    op->memkill = -1.0;
     op->execArgc = -1;
     op->seconds = -1;
     op->useOut = false;
@@ -80,8 +81,9 @@ options_server_t *receive_options(int socket_id)
     }
     else if (op->type == Memkill)
     {
-        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
-        op->memkill = ntohs(recved);
+        char discard[FLOAT_MAX];
+        int num_bytes = exRecv(socket_id, discard, FLOAT_MAX, 0);
+        op->memkill = atof(discard);
         return op;
     }
     else if (op->type == FileExec)
@@ -236,11 +238,9 @@ int main(int argc, char *argv[])
 
         if (op->type == Mem)
         {
-            print_log(" - Got request 'mem' without pid\n", op->mempid);
             uint16_t num_entries = htons(current_id);
             // send number of entries to the server first
             exSend(new_fd, &num_entries, sizeof(uint16_t), 0);
-            printf("Entry count = %d\n", current_id);
             mem_entry_t *all = get_all_mem_entries();
             for (saved_request_t *r = saved_head; r != NULL; r = r->next)
             {
@@ -269,7 +269,6 @@ int main(int argc, char *argv[])
         }
         else if (op->type == MemWithPid)
         {
-            print_log(" - Got request 'mem' with pid\n", op->mempid);
             mem_entry_t *all = get_all_mem_entries();
             int count = 0;
             // count number of entries for pid
@@ -296,7 +295,7 @@ int main(int argc, char *argv[])
         }
         else if (op->type == Memkill)
         {
-            print_log(" - Memkill %d\n", op->memkill);
+            print_log(" - Memkill %0.4f\n", op->memkill);
         }
         else if (op->type == FileExec)
         {

@@ -25,7 +25,8 @@ typedef enum op_type
 typedef struct
 {
     op_type_t type;
-    int success, seconds, mempid, memkill, execArgc;
+    int success, seconds, mempid, execArgc;
+    double memkill;
     char *logfile;
     char *outfile;
     char *execCommand;
@@ -38,7 +39,8 @@ typedef struct
 {
     bool useOut, useLog;
     op_type_t type;
-    int request_id, seconds, mempid, memkill, execArgc;
+    int request_id, seconds, mempid, execArgc;
+    double memkill;
     char *logfile;
     char *outfile;
     char *execCommand;

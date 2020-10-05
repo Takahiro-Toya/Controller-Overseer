@@ -14,6 +14,7 @@
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 #define LOGTIME_SIZE 25
+#define FLOAT_MAX 6 
 
 void send_options(int socket_id, options_t options)
 {
@@ -34,7 +35,9 @@ void send_options(int socket_id, options_t options)
     else if (options.type == Memkill)
     {
         uint16_t percent = htons(options.memkill);
-        exSend(socket_id, &percent, sizeof(uint16_t), 0);
+        char buf[FLOAT_MAX]; 
+        gcvt(options.memkill, 5, buf);
+        exSend(socket_id, buf, FLOAT_MAX, 0);
     }
     else if (options.type == FileExec)
     {
@@ -121,7 +124,6 @@ int main(int argc, char *argv[])
         int num_entries = 0;
         exRecv(sockfd, &recved, sizeof(uint16_t), 0);
         num_entries = ntohs(recved);
-        printf("Entry count = %d\n", num_entries);
         for (int i = 0; i < num_entries; i++) {
             int pid;
             unsigned int bytes;
