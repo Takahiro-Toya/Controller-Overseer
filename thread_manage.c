@@ -5,6 +5,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/types.h> // linux
+#include <sys/wait.h> // linux
 #include "structs.h"
 #include "extensions.h"
 #include "thread_manage.h"
@@ -12,6 +14,7 @@
 #include "output_manage.h"
 #include "memory_manage.h"
 #include "setjmp.h"
+#include "mem_regulation.h"
 
 #define NUM_THREADS 5
 
@@ -29,30 +32,29 @@ int pending_count = 0;
 optionContainer_t *requests = NULL;
 optionContainer_t *last_request = NULL;
 
-mem_entry_t *mem_head;
+// mem_entry_t *mem_head;
 
+// void request_add_entry(pid_t pid, int id) {
+//     pthread_mutex_lock(&mem_request_mutex);
+//     mem_entry_t *new = exMalloc(sizeof(mem_entry_t));
+//     new->id = id;
+//     new->pid = pid;
+//     new->bytes = get_mem_for_pid(pid);
+//     new->time = get_formatted_time();
+//     if (mem_head == NULL) {
+//         mem_head = exMalloc(sizeof(mem_entry_t));
+//         new->next = NULL;
+//         mem_head = new;
+//     } else {
+//         new->next = mem_head;
+//         mem_head = new;
+//     }
+//     pthread_mutex_unlock(&mem_request_mutex);
+// }
 
-void request_add_entry(pid_t pid, int id) {
-    pthread_mutex_lock(&mem_request_mutex);
-    mem_entry_t *new = exMalloc(sizeof(mem_entry_t));
-    new->id = id;
-    new->pid = pid;
-    new->bytes = 0;
-    new->time = get_formatted_time();
-    if (mem_head == NULL) {
-        mem_head = exMalloc(sizeof(mem_entry_t));
-        new->next = NULL;
-        mem_head = new;
-    } else {
-        new->next = mem_head;
-        mem_head = new;
-    }
-    pthread_mutex_unlock(&mem_request_mutex);
-}
-
-mem_entry_t *get_all_mem_entries() {
-    return mem_head;
-}
+// mem_entry_t *get_all_mem_entries() {
+//     return mem_head;
+// }
 
 
 
@@ -135,6 +137,8 @@ void handle_request(optionContainer_t *container)
     int outerstatus;
     // good to have outer fork here to avoid sharing of file descriptors
     // with other threads (processes)
+    int fd_execpid[2];
+    pipe(fd_execpid);
     pid_t outer_pid = fork();
     if (outer_pid < 0)
     {
@@ -142,7 +146,7 @@ void handle_request(optionContainer_t *container)
     }
     else if (outer_pid == 0)
     {
-        pid_t childpid_ref;
+        close(fd_execpid[0]);
         options_server_t *op = container->option;
         if (op != NULL)
         {
@@ -195,7 +199,9 @@ void handle_request(optionContainer_t *container)
             }
             else // parent process
             {
+                write(fd_execpid[1], &exec_pid, sizeof(pid_t));
                 close(sfd[1]);
+                close(fd_execpid[1]);
                 alarm(container->option->seconds == -1 ? 10 : container->option->seconds);
                 signal(SIGALRM, timeout_handler);
                 int terminate_success = 0;
@@ -217,14 +223,13 @@ void handle_request(optionContainer_t *container)
 
                 }
 
-                // wait for execution child
-                int wait;
-                while ((wait = waitpid(exec_pid, &status, WNOHANG)) == 0) {
-                    sleep(1);
-                    request_add_entry(exec_pid, op->request_id);
-                    print_log("ID: %d PID: %d\n", mem_head->id, mem_head->pid);
-                } 
-                if (wait < 0) {
+                // wait for execution in child process
+                // int wait;
+                // while ((wait = waitpid(exec_pid, &status, WNOHANG)) == 0) {
+                //     sleep(1); // every one second append memory info
+                    
+                // } 
+                if (waitpid(exec_pid, &status, 0) < 0) {
                     exPerror("wait");
                 }
 
@@ -238,7 +243,6 @@ void handle_request(optionContainer_t *container)
                         print_log("- %s has been executed with pid %d\n", op->execCommand, exec_pid);
                         print_log("- %d has terminated with status code %d\n", exec_pid, WEXITSTATUS(status));
                     }
-                    exit(EXIT_SUCCESS);
                 }
                 // signaled and terminated
                 if (WIFSIGNALED(status))
@@ -261,15 +265,34 @@ void handle_request(optionContainer_t *container)
                 {
                     close(container->out_fd);
                 }
+                exit(EXIT_SUCCESS);
             }
         }
     }
     // outer fork
     else
     {
-        if (waitpid(-1, &outerstatus, WNOHANG) < 0)
-        {
+        close(fd_execpid[1]);
+        int target_pid = -1;
+        // read(fd_execpid[0], &target_pid, sizeof(pid_t));
+        int wait;
+        while ((wait = waitpid(outer_pid, &outerstatus, WNOHANG)) == 0) {
+            if (target_pid == -1) {
+                read(fd_execpid[0], &target_pid, sizeof(pid_t));
+                close(fd_execpid[0]);
+            } else {
+                sleep(1);
+                pthread_mutex_lock(&mem_request_mutex);
+                request_add_entry(target_pid, container->option->request_id);
+                pthread_mutex_unlock(&mem_request_mutex);
+            }            
+        }
+        if (wait < 0) {
             exPerror("waitpid");
+        }
+        if (WIFEXITED(outerstatus))
+        {
+            
         }
     }
 }

@@ -1,12 +1,12 @@
 
 
 
-/*
- * add new pid entry
- * */ 
-void request_add_entry(pid_t pid, int id);
+// /*
+//  * add new pid entry
+//  * */ 
+// void request_add_entry(pid_t pid, int id);
 
-mem_entry_t *get_all_mem_entries();
+// mem_entry_t *get_all_mem_entries();
 
 /*
  * add new request to linked list

@@ -22,18 +22,22 @@
 
 #define RETURNED_ERROR -1
 
+#define LOGTIME_SIZE 25
+
 saved_request_t *saved_head;
-int next_id = 1;
+int current_id = 0;
 
 int save_request(char *file_args)
 {
     saved_request_t *new = exMalloc(sizeof(saved_request_t));
-    new->request_id = next_id;
-    new->file_args = file_args;
+    int len = strlen(file_args);
+    new->file_args = (char *)exMalloc(sizeof(char) * (len + 1));
+    strcpy(new->file_args, file_args);
+    new->request_id = current_id;
     if (saved_head == NULL)
     {
         saved_head = exMalloc(sizeof(saved_request_t));
-        saved_head->next = NULL;
+        new->next = NULL;
         saved_head = new;
     }
     else
@@ -41,7 +45,7 @@ int save_request(char *file_args)
         new->next = saved_head;
         saved_head = new;
     }
-    return next_id++;
+    return current_id;
 }
 
 options_server_t *receive_options(int socket_id)
@@ -212,10 +216,10 @@ int main(int argc, char *argv[])
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
     { /* main accept() loop */
-        
+
         sin_size = sizeof(struct sockaddr_in);
         if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
-                            &sin_size)) == -1)
+                             &sin_size)) == -1)
         {
             perror("accept");
             continue;
@@ -225,19 +229,70 @@ int main(int argc, char *argv[])
             close(new_fd);
             break;
         }
-        
+
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
 
         options_server_t *op = receive_options(new_fd);
-        
+
         if (op->type == Mem)
         {
-            print_log(" - mem without pid %d\n", op->mempid);
+            print_log(" - Got request 'mem' without pid\n", op->mempid);
+            uint16_t num_entries = htons(current_id);
+            // send number of entries to the server first
+            exSend(new_fd, &num_entries, sizeof(uint16_t), 0);
+            printf("Entry count = %d\n", current_id);
+            mem_entry_t *all = get_all_mem_entries();
+            for (saved_request_t *r = saved_head; r != NULL; r = r->next)
+            {
+                for (mem_entry_t *e = all; e != NULL; e = e->next)
+                {
+                    if (r->request_id == e->id)
+                    {
+                        // send the last record of each execution
+                        // send pid
+                        uint16_t ndata = htons((int)(e->pid));
+                        exSend(new_fd, &ndata, sizeof(uint16_t), 0);
+                        // send bytes
+                        uint32_t ndata_b = htonl(e->bytes);
+                        exSend(new_fd, &ndata_b, sizeof(uint32_t), 0);
+                        // // send file args string length 
+                        ndata = htons(strlen(r->file_args));
+                        exSend(new_fd, &ndata, sizeof(uint16_t), 0);
+                        // send string
+                        exSend(new_fd, r->file_args, strlen(r->file_args), 0);
+                        printf("%d %d %s\n", e->pid, e->bytes, r->file_args);
+                        break;
+                    }
+                }
+            }
+            close(new_fd);
         }
         else if (op->type == MemWithPid)
         {
-            print_log(" - Mem with pid %d\n", op->mempid);
-            print_mem_for_pid(op->mempid);
+            print_log(" - Got request 'mem' with pid\n", op->mempid);
+            mem_entry_t *all = get_all_mem_entries();
+            int count = 0;
+            // count number of entries for pid
+            for (mem_entry_t *e = all; e != NULL; e = e->next)
+            {
+                if (e->pid == op->mempid)
+                {
+                    count++;
+                }
+            }
+            uint16_t num_entries = htons(count);
+            // send number of entries
+            exSend(new_fd, &num_entries, sizeof(uint16_t), 0);
+            for (mem_entry_t *e = all; e != NULL; e = e->next)
+            {
+                if (e->pid == op->mempid)
+                {
+                    exSend(new_fd, e->time, LOGTIME_SIZE, 0);
+                    uint32_t nbytes = htonl(e->bytes);
+                    exSend(new_fd, &nbytes, sizeof(uint32_t), 0);
+                }
+            }
+            close(new_fd);
         }
         else if (op->type == Memkill)
         {
@@ -247,6 +302,7 @@ int main(int argc, char *argv[])
         {
             int id = save_request(op->execCommand);
             op->request_id = id;
+            current_id++;
             add_request(op);
             close(new_fd);
         }
@@ -256,6 +312,5 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Undefined option type");
             exit(EXIT_FAILURE);
         }
-
-    }
+    } // while loop
 }

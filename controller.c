@@ -13,8 +13,7 @@
 #include "helper.h"
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
-
-
+#define LOGTIME_SIZE 25
 
 void send_options(int socket_id, options_t options)
 {
@@ -115,7 +114,53 @@ int main(int argc, char *argv[])
     }
 
     send_options(sockfd, options);
-    close(sockfd);
+    if (options.type == Mem)
+    {
+        // receive number of entries
+        uint16_t recved;
+        int num_entries = 0;
+        exRecv(sockfd, &recved, sizeof(uint16_t), 0);
+        num_entries = ntohs(recved);
+        printf("Entry count = %d\n", num_entries);
+        for (int i = 0; i < num_entries; i++) {
+            int pid;
+            unsigned int bytes;
+            char *args;
+            exRecv(sockfd, &recved, sizeof(uint16_t), 0);
+            pid = ntohs(recved);
+            uint32_t recved_b;
+            exRecv(sockfd, &recved_b, sizeof(uint32_t), 0);
+            bytes = ntohl(recved_b);
+            exRecv(sockfd, &recved, sizeof(uint16_t), 0);
+            args = exMalloc(sizeof(char) * (htons(recved) + 1));
+            int length = exRecv(sockfd, args, sizeof(char) * htons(recved), 0);
+            args[length] = '\0';
+            printf("%d %d %s\n", pid, bytes, args);
+            // printf("%d %d\n", pid, bytes);
+        }
+        close(sockfd);
+    }
+    else if (options.type == MemWithPid)
+    {
+        uint16_t recved;
+        int num_entries = 0;
+        exRecv(sockfd, &recved, sizeof(uint16_t), 0);
+        num_entries = ntohs(recved);   
+        for (int i = 0; i < num_entries; i++) {
+            char logtime[MAXDATASIZE];
+            int length = exRecv(sockfd, logtime, LOGTIME_SIZE, 0);
+            logtime[length] = '\0';
+            uint32_t recved_b;
+            exRecv(sockfd, &recved_b, sizeof(uint32_t), 0);
+            unsigned int bytes = ntohl(recved_b);
+            printf("%s %d\n", logtime, bytes);
+        } 
+        close(sockfd);
+    }
+    else
+    {
+        close(sockfd);
+    }
 
     return 0;
 }

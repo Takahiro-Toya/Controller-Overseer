@@ -4,25 +4,50 @@
 #include <fcntl.h>
 #include "mem_regulation.h"
 #include "structs.h"
+#include "extensions.h"
+#include "output_manage.h"
 
-void print_mem_for_pid(pid_t pid) {
+unsigned int get_mem_for_pid(pid_t pid)
+{
 
-    char path_buf[1000];
-    char read_buf[2048];
-    size_t nread;
-    sprintf(path_buf, "/proc/%d/maps", (int)pid);
-    // error here
-    printf("%s\n", path_buf);
-    FILE *file = fopen(path_buf, O_RDONLY);
-    // if (file) {
-    //     while((nread = fread(read_buf, 1, sizeof(read_buf), file)) > 0) {
-    //         fwrite(read_buf, 1, nread, stdout);
+    unsigned int count = 0;
+    count = 500000;
+    // char buf[512];
+    // FILE *file;
+    // sprintf(buf, "/proc/%d/maps", (int)pid);
+    // file = fopen(buf, "r");
+    // while(fgets(buf, 512, file)){
+    //     unsigned int from, to, perms, offset, dev, inode, pathname;
+    //     int ret = sscanf(buf, "%x-%x %4c %x %x %u %s", &from, &to, &perms, &offset, &dev, &inode, &pathname);
+    //     if (ret != 10) {
+    //         break;
     //     }
-    //     if (ferror(file)) {
-    //         printf("ERRROR\n");
+    //     if (inode == 0) {
+    //         count += (to - from);
     //     }
-    //     fclose(file);
-    // } else {
-    //     printf("FILE OPEN FAIL\n");
     // }
+    return count;
 };
+
+mem_entry_t *mem_head;
+void request_add_entry(pid_t pid, int id)
+{
+    mem_entry_t *new = exMalloc(sizeof(mem_entry_t));
+    new->id = id;
+    new->pid = pid;
+    new->bytes = get_mem_for_pid(pid);
+    new->time = get_formatted_time();
+    if (mem_head == NULL) {
+        // this entry will be at the trailing 
+        mem_head = exMalloc(sizeof(mem_entry_t));
+        new->next = NULL;
+        mem_head = new;
+    } else {
+        new->next = mem_head;
+        mem_head = new;
+    }
+}
+
+mem_entry_t *get_all_mem_entries() {
+    return mem_head;
+}
