@@ -11,21 +11,23 @@ unsigned int get_mem_for_pid(pid_t pid)
 {
 
     unsigned int count = 0;
-    count = 500000;
-    // char buf[512];
-    // FILE *file;
-    // sprintf(buf, "/proc/%d/maps", (int)pid);
-    // file = fopen(buf, "r");
-    // while(fgets(buf, 512, file)){
-    //     unsigned int from, to, perms, offset, dev, inode, pathname;
-    //     int ret = sscanf(buf, "%x-%x %4c %x %x %u %s", &from, &to, &perms, &offset, &dev, &inode, &pathname);
-    //     if (ret != 10) {
-    //         break;
-    //     }
-    //     if (inode == 0) {
-    //         count += (to - from);
-    //     }
-    // }
+    char buf[512];
+    FILE *file;
+    sprintf(buf, "/proc/%d/maps", (int)pid);
+    file = fopen(buf, "r");
+    if (file != NULL) {
+        while(fgets(buf, 512, file)){
+            unsigned int from, to, perms, offset, dev, inode, pathname;
+            int ret = sscanf(buf, "%x-%x %4c %x %x %u %s", &from, &to, &perms, &offset, &dev, &inode, &pathname);
+            if (ret != 10) {
+                break;
+            }
+            if (inode == 0) {
+                count += (to - from);
+            }
+        }
+    }
+    // need to free memory?
     return count;
 };
 
