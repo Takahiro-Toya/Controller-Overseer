@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
     } 
 
 
-
     
     for (int i = 1; i < argc ; i++) {
         
@@ -34,8 +33,8 @@ int main(int argc, char *argv[]) {
         sleep(1);
     }
 
-    printf("wait for 3 seconds ...\n");
-    sleep(3);
+    printf("wait for 20 seconds ...\n");
+    sleep(20);
     printf("Done!\n");
     return 0;
 }

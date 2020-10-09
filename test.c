@@ -12,6 +12,10 @@
 int main(int argc, char* argv[])
 {
     
+    struct sysinfo si;
 
+    int l = sysinfo(&si);
+
+    printf("%lu %lu\n", si.totalram, si.freeram);
     return 0;
 }

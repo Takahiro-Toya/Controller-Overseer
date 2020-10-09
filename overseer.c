@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <time.h>
 #include <signal.h>
+#include <sys/sysinfo.h>
 #include "setjmp.h"
 #include "structs.h"
 #include "extensions.h"
@@ -23,31 +24,7 @@
 #define RETURNED_ERROR -1
 
 #define LOGTIME_SIZE 25
-#define FLOAT_MAX 6
 
-saved_request_t *saved_head;
-int current_id = 0;
-
-int save_request(char *file_args)
-{
-    saved_request_t *new = exMalloc(sizeof(saved_request_t));
-    int len = strlen(file_args);
-    new->file_args = (char *)exMalloc(sizeof(char) * (len + 1));
-    strcpy(new->file_args, file_args);
-    new->request_id = current_id;
-    if (saved_head == NULL)
-    {
-        saved_head = exMalloc(sizeof(saved_request_t));
-        new->next = NULL;
-        saved_head = new;
-    }
-    else
-    {
-        new->next = saved_head;
-        saved_head = new;
-    }
-    return current_id;
-}
 
 options_server_t *receive_options(int socket_id)
 {
@@ -81,9 +58,13 @@ options_server_t *receive_options(int socket_id)
     }
     else if (op->type == Memkill)
     {
-        char discard[FLOAT_MAX];
-        int num_bytes = exRecv(socket_id, discard, FLOAT_MAX, 0);
-        op->memkill = atof(discard);
+        int size;
+        exRecv(socket_id, &recved, sizeof(uint16_t), 0);
+        size = ntohs(recved);
+        char discard[size];
+        int num_bytes = exRecv(socket_id, discard, size, 0);
+        discard[num_bytes] = '\0';
+        sscanf(discard, "%lf", &op->memkill);
         return op;
     }
     else if (op->type == FileExec)
@@ -207,10 +188,7 @@ int main(int argc, char *argv[])
         exPerror("listen");
     }
 
-    struct sigaction sa;
-    memset(&sa, '\0', sizeof(char));
-    sa.sa_handler = &sigint_handler_o;
-    sigaction(SIGINT, &sa, NULL);
+    signal(SIGKILL, sigint_handler_o);
 
     use_fd();
 
@@ -238,17 +216,20 @@ int main(int argc, char *argv[])
 
         if (op->type == Mem)
         {
-            uint16_t num_entries = htons(current_id);
+            uint16_t num_entries = htons(get_current_id());
             // send number of entries to the server first
             exSend(new_fd, &num_entries, sizeof(uint16_t), 0);
             mem_entry_t *all = get_all_mem_entries();
-            for (saved_request_t *r = saved_head; r != NULL; r = r->next)
+            for (saved_request_t *r = get_request_head(); r != NULL; r = r->next)
             {
                 for (mem_entry_t *e = all; e != NULL; e = e->next)
                 {
                     if (r->request_id == e->id)
                     {
                         // send the last record of each execution
+                        // send completed status
+                        uint16_t isCompleted = htons(r->completed ? 1 : 0);
+                        exSend(new_fd, &isCompleted, sizeof(uint16_t), 0);
                         // send pid
                         uint16_t ndata = htons((int)(e->pid));
                         exSend(new_fd, &ndata, sizeof(uint16_t), 0);
@@ -260,7 +241,7 @@ int main(int argc, char *argv[])
                         exSend(new_fd, &ndata, sizeof(uint16_t), 0);
                         // send string
                         exSend(new_fd, r->file_args, strlen(r->file_args), 0);
-                        printf("%d %d %s\n", e->pid, e->bytes, r->file_args);
+                        // break because this is the last record
                         break;
                     }
                 }
@@ -295,13 +276,28 @@ int main(int argc, char *argv[])
         }
         else if (op->type == Memkill)
         {
-            print_log(" - Memkill %0.4f\n", op->memkill);
+            mem_entry_t *all = get_all_mem_entries();
+            // iterate over the entry linked list
+            for (mem_entry_t *e = all; e != NULL; e = e->next) {
+                struct sysinfo si;
+                            
+                if (sysinfo(&si) < 0) {
+                    exPerror("sysinfo");
+                }
+                
+                // printf("kill: %lf\n", op->memkill);
+                // kill only if the memory usage are over the threshold
+                if (((double)(e->bytes) / (double)(si.totalram)) >= op->memkill) {
+                    kill(e->pid, SIGKILL);
+                }
+            }
+            close(new_fd);
         }
         else if (op->type == FileExec)
         {
             int id = save_request(op->execCommand);
             op->request_id = id;
-            current_id++;
+            increment_current_id();
             add_request(op);
             close(new_fd);
         }

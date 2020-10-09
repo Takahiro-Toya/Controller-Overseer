@@ -8,6 +8,8 @@
 #include "extensions.h"
 #include "usage.h"
 
+#define MAX_FLOAT 10
+
 void print_usage_error()
 {
     fprintf(stderr, "usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
@@ -16,7 +18,7 @@ void print_usage_error()
 options_t getControllerInitCommand(int argc, char *argv[])
 {
 
-    options_t op = {FileExec, 1, -1, -1, 1, -1.0, NULL, NULL, NULL};
+    options_t op = {FileExec, 1, -1, -1, 1, NULL, NULL, NULL, NULL};
 
     // print usage to stdout
     if (strcmp(argv[1], "--help") == 0)
@@ -59,7 +61,8 @@ options_t getControllerInitCommand(int argc, char *argv[])
         else
         {
             op.type = Memkill;
-            op.memkill = (int)(atof(argv[4]) * 100.0) / 100.0;
+            op.memkill = (char *)exMalloc(sizeof(char) * (strlen(argv[4]) + 1));
+            op.memkill = argv[4];
         }
     }
     // other options

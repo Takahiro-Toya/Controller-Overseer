@@ -14,7 +14,7 @@
 
 #define MAXDATASIZE 100 /* max number of bytes we can get at once */
 #define LOGTIME_SIZE 25
-#define FLOAT_MAX 6 
+#define FLOAT_MAX 10
 
 void send_options(int socket_id, options_t options)
 {
@@ -34,10 +34,9 @@ void send_options(int socket_id, options_t options)
     }
     else if (options.type == Memkill)
     {
-        uint16_t percent = htons(options.memkill);
-        char buf[FLOAT_MAX]; 
-        gcvt(options.memkill, 5, buf);
-        exSend(socket_id, buf, FLOAT_MAX, 0);
+        uint16_t size = htons(strlen(options.memkill));
+        exSend(socket_id, &size, sizeof(uint16_t), 0);
+        exSend(socket_id, options.memkill, strlen(options.memkill), 0);
     }
     else if (options.type == FileExec)
     {
@@ -125,9 +124,12 @@ int main(int argc, char *argv[])
         exRecv(sockfd, &recved, sizeof(uint16_t), 0);
         num_entries = ntohs(recved);
         for (int i = 0; i < num_entries; i++) {
+            bool isCompleted;
             int pid;
             unsigned int bytes;
             char *args;
+            exRecv(sockfd, &recved, sizeof(uint16_t), 0);
+            isCompleted = ntohs(recved);
             exRecv(sockfd, &recved, sizeof(uint16_t), 0);
             pid = ntohs(recved);
             uint32_t recved_b;
@@ -137,8 +139,10 @@ int main(int argc, char *argv[])
             args = exMalloc(sizeof(char) * (htons(recved) + 1));
             int length = exRecv(sockfd, args, sizeof(char) * htons(recved), 0);
             args[length] = '\0';
-            printf("%d %d %s\n", pid, bytes, args);
-            // printf("%d %d\n", pid, bytes);
+            if (!isCompleted) {
+                printf("%d %d %s\n", pid, bytes, args);
+            }
+            
         }
         close(sockfd);
     }

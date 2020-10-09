@@ -17,6 +17,7 @@
 #include "mem_regulation.h"
 
 #define NUM_THREADS 5
+#define SIGKILL_THRESHOLD 5
 
 // thread handling variables
 pthread_mutex_t request_mutex;
@@ -31,31 +32,6 @@ int pending_count = 0;
 
 optionContainer_t *requests = NULL;
 optionContainer_t *last_request = NULL;
-
-// mem_entry_t *mem_head;
-
-// void request_add_entry(pid_t pid, int id) {
-//     pthread_mutex_lock(&mem_request_mutex);
-//     mem_entry_t *new = exMalloc(sizeof(mem_entry_t));
-//     new->id = id;
-//     new->pid = pid;
-//     new->bytes = get_mem_for_pid(pid);
-//     new->time = get_formatted_time();
-//     if (mem_head == NULL) {
-//         mem_head = exMalloc(sizeof(mem_entry_t));
-//         new->next = NULL;
-//         mem_head = new;
-//     } else {
-//         new->next = mem_head;
-//         mem_head = new;
-//     }
-//     pthread_mutex_unlock(&mem_request_mutex);
-// }
-
-// mem_entry_t *get_all_mem_entries() {
-//     return mem_head;
-// }
-
 
 
 /**
@@ -199,6 +175,7 @@ void handle_request(optionContainer_t *container)
             }
             else // parent process
             {
+                // send child procedd pid to outer parent (same process as overseer)
                 write(fd_execpid[1], &exec_pid, sizeof(pid_t));
                 close(sfd[1]);
                 close(fd_execpid[1]);
@@ -211,7 +188,7 @@ void handle_request(optionContainer_t *container)
                     signal(SIGALRM, SIG_DFL);
                     kill(exec_pid, SIGTERM);
                     print_log("- sent SIGTERM to %d\n", exec_pid);
-                    alarm(5);
+                    alarm(SIGKILL_THRESHOLD);
                     signal(SIGALRM, timeout_handler_f);
                     if (sigsetjmp(env2, 1) != 0)
                     {
@@ -224,11 +201,6 @@ void handle_request(optionContainer_t *container)
                 }
 
                 // wait for execution in child process
-                // int wait;
-                // while ((wait = waitpid(exec_pid, &status, WNOHANG)) == 0) {
-                //     sleep(1); // every one second append memory info
-                    
-                // } 
                 if (waitpid(exec_pid, &status, 0) < 0) {
                     exPerror("wait");
                 }
@@ -274,12 +246,13 @@ void handle_request(optionContainer_t *container)
     {
         close(fd_execpid[1]);
         int target_pid = -1;
-        // read(fd_execpid[0], &target_pid, sizeof(pid_t));
         int wait;
         while ((wait = waitpid(outer_pid, &outerstatus, WNOHANG)) == 0) {
+            // read only once
             if (target_pid == -1) {
                 read(fd_execpid[0], &target_pid, sizeof(pid_t));
                 close(fd_execpid[0]);
+            // append memory emtry every one second
             } else {
                 sleep(1);
                 pthread_mutex_lock(&mem_request_mutex);
@@ -292,7 +265,7 @@ void handle_request(optionContainer_t *container)
         }
         if (WIFEXITED(outerstatus))
         {
-            
+            mark_request_completed(container->option->request_id);
         }
     }
 }

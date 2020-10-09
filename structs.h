@@ -26,7 +26,7 @@ typedef struct
 {
     op_type_t type;
     int success, seconds, mempid, execArgc;
-    double memkill;
+    char *memkill;
     char *logfile;
     char *outfile;
     char *execCommand;
@@ -78,6 +78,7 @@ struct mem_entry
 typedef struct saved_request saved_request_t;
 struct saved_request
 {
+    bool completed;
     int request_id;
     char *file_args;
     saved_request_t *next;
