@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/types.h> // linux
-#include <sys/wait.h> // linux
+#include <sys/wait.h>  // linux
 #include "structs.h"
 #include "extensions.h"
 #include "thread_manage.h"
@@ -32,7 +32,6 @@ int pending_count = 0;
 
 optionContainer_t *requests = NULL;
 optionContainer_t *last_request = NULL;
-
 
 /**
  * Add new request to the requests queue
@@ -76,7 +75,7 @@ void add_request(options_server_t *option)
 
     pthread_mutex_unlock(&request_mutex);
     pthread_cond_signal(&got_request);
-}   
+}
 
 /*
  * Get next request (the first element of the linked request)
@@ -197,11 +196,11 @@ void handle_request(optionContainer_t *container)
                         kill(exec_pid, SIGKILL);
                         print_log("- sent SIGKILL to %d\n", exec_pid);
                     }
-
                 }
 
                 // wait for execution in child process
-                if (waitpid(exec_pid, &status, 0) < 0) {
+                if (waitpid(exec_pid, &status, 0) < 0)
+                {
                     exPerror("wait");
                 }
 
@@ -247,20 +246,25 @@ void handle_request(optionContainer_t *container)
         close(fd_execpid[1]);
         int target_pid = -1;
         int wait;
-        while ((wait = waitpid(outer_pid, &outerstatus, WNOHANG)) == 0) {
+        while ((wait = waitpid(outer_pid, &outerstatus, WNOHANG)) == 0)
+        {
             // read only once
-            if (target_pid == -1) {
+            if (target_pid == -1)
+            {
                 read(fd_execpid[0], &target_pid, sizeof(pid_t));
                 close(fd_execpid[0]);
-            // append memory emtry every one second
-            } else {
+                // append memory emtry every one second
+            }
+            else
+            {
                 sleep(1);
                 pthread_mutex_lock(&mem_request_mutex);
                 request_add_entry(target_pid, container->option->request_id);
                 pthread_mutex_unlock(&mem_request_mutex);
-            }            
+            }
         }
-        if (wait < 0) {
+        if (wait < 0)
+        {
             exPerror("waitpid");
         }
         if (WIFEXITED(outerstatus))
@@ -325,6 +329,7 @@ void init_threads()
 
 void cancel_all_threads()
 {
+    clean_requests();
     for (int i = 0; i < NUM_THREADS; i++)
     {
         pthread_cancel(threads[i]);

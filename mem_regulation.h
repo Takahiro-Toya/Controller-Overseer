@@ -11,6 +11,8 @@ mem_entry_t *get_all_mem_entries();
 
 int save_request();
 
+void clean_requests();
+
 saved_request_t *get_request_head();
 
 int get_current_id();

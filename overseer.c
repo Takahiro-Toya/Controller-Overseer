@@ -206,6 +206,7 @@ int main(int argc, char *argv[])
         }
         if (sigsetjmp(env, 3) != 0)
         {
+            cancel_all_threads();
             close(new_fd);
             break;
         }

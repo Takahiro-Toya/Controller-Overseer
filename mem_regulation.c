@@ -41,7 +41,6 @@ void request_add_entry(pid_t pid, int id)
     new->bytes = get_mem_for_pid(pid);
     new->time = get_formatted_time();
     if (mem_head == NULL) {
-        // this entry will be at the trailing 
         mem_head = exMalloc(sizeof(mem_entry_t));
         new->next = NULL;
         mem_head = new;
@@ -66,18 +65,25 @@ int save_request(char *file_args)
     new->file_args = (char *)exMalloc(sizeof(char) * (len + 1));
     strcpy(new->file_args, file_args);
     new->request_id = current_id;
-    if (saved_head == NULL)
-    {
-        saved_head = exMalloc(sizeof(saved_request_t));
-        new->next = NULL;
-        saved_head = new;
-    }
-    else
-    {
+    // if (saved_head == NULL)
+    // {
+    //     saved_head = exMalloc(sizeof(saved_request_t));
+    //     new->next = NULL;
+    //     saved_head = new;
+    // }
+    // else
+    // {
         new->next = saved_head;
         saved_head = new;
-    }
+    // }
     return current_id;
+}
+
+void clean_requests() {
+    for (saved_request_t *r = saved_head; r != NULL; r = r->next) {
+        free(r->file_args);
+        free(r);
+    }
 }
 
 saved_request_t *get_request_head() {
