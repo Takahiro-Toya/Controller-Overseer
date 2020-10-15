@@ -101,11 +101,19 @@ int main(int argc, char *argv[])
         exPerror("socket");
     }
 
+    int port;
+    if (is_number(argv[2])) {
+        port = atoi(argv[2]);
+    } else {
+        print_usage_error();
+        exit(EXIT_FAILURE);
+    }
+
     /* clear address struct */
     memset(&their_addr, 0, sizeof(their_addr));
 
     their_addr.sin_family = AF_INET;            /* host byte order */
-    their_addr.sin_port = htons(atoi(argv[2])); /* short, network byte order */
+    their_addr.sin_port = htons(port); /* short, network byte order */
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
 
     if (connect(sockfd, (struct sockaddr *)&their_addr,

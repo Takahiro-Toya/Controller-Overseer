@@ -10,25 +10,21 @@
 #include <time.h>
 #include <stdarg.h>
 #include <fcntl.h>
-
-
+#include <ctype.h>
 
 /*
  * printf int, to debug
  */
-void print_int(int i)
-{
-    printf("%d\n", i);
-}
+void print_int(int i);
 /*
  * printf string, to debug
  */
-void print_string(char *string)
-{
-    printf("%s\n", string);
-}
+void print_string(char *string);
 
-
+/*
+ * Chceck if the string is number 
+ */
+int is_number(const char *str);
 
 
 #endif

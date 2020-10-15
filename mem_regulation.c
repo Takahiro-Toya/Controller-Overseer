@@ -40,14 +40,8 @@ void request_add_entry(pid_t pid, int id)
     new->pid = pid;
     new->bytes = get_mem_for_pid(pid);
     new->time = get_formatted_time();
-    if (mem_head == NULL) {
-        mem_head = exMalloc(sizeof(mem_entry_t));
-        new->next = NULL;
-        mem_head = new;
-    } else {
-        new->next = mem_head;
-        mem_head = new;
-    }
+    new->next = mem_head;
+    mem_head = new;
 }
 
 mem_entry_t *get_all_mem_entries() {

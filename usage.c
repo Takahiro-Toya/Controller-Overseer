@@ -7,6 +7,7 @@
 #include "structs.h"
 #include "extensions.h"
 #include "usage.h"
+#include "helper.h"
 
 #define MAX_FLOAT 10
 
@@ -47,7 +48,13 @@ options_t getControllerInitCommand(int argc, char *argv[])
         else
         {
             op.type = MemWithPid;
-            op.mempid = atoi(argv[4]);
+            if (is_number(argv[4])){
+                op.mempid = atoi(argv[4]);
+            } else {
+                print_usage_error();
+                op.success = -1;
+                return op;
+            }
         }
     }
     // memkill option
@@ -62,7 +69,13 @@ options_t getControllerInitCommand(int argc, char *argv[])
         {
             op.type = Memkill;
             op.memkill = (char *)exMalloc(sizeof(char) * (strlen(argv[4]) + 1));
-            op.memkill = argv[4];
+            if (is_number(argv[4])){
+                op.memkill = argv[4];
+            } else {
+                print_usage_error();
+                op.success = -1;
+                return op;
+            }
         }
     }
     // other options
