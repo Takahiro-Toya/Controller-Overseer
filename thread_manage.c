@@ -343,7 +343,7 @@ void cancel_all_threads()
  */
 char **split_string_by_space(char *string, int splitnum)
 {
-    char copy[strlen(string)];
+    char copy[strlen(string) + 1];
     strcpy(copy, string);
 
     char **strarray = (char **)exMalloc(sizeof(char *) * (splitnum + 1));
@@ -351,7 +351,7 @@ char **split_string_by_space(char *string, int splitnum)
 
     for (int i = 0; i < splitnum; i++)
     {
-        strarray[i] = (char *)exMalloc(sizeof(char) * strlen(p));
+        strarray[i] = (char *)exMalloc((sizeof(char) + 1) * strlen(p));
         strcpy(strarray[i], p);
         p = strtok(NULL, " ");
     }

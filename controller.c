@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
             exRecv(sockfd, &recved_b, sizeof(uint32_t), 0);
             bytes = ntohl(recved_b);
             exRecv(sockfd, &recved, sizeof(uint16_t), 0);
-            args = exMalloc(sizeof(char) * (htons(recved) + 1));
+            args = exMalloc((sizeof(char) + 1) * (htons(recved)));
             int length = exRecv(sockfd, args, sizeof(char) * htons(recved), 0);
             args[length] = '\0';
             if (!isCompleted) {

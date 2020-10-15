@@ -1,346 +1,279 @@
-==11813== Memcheck, a memory error detector
-==11813== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==11813== Using Valgrind-3.14.0-353a3587bb-20181007X and LibVEX; rerun with -h for copyright info
-==11813== Command: ./overseer 3000
-==11813== Parent PID: 3665
-==11813== 
---11813-- 
---11813-- Valgrind options:
---11813--    --leak-check=full
---11813--    --show-leak-kinds=all
---11813--    --track-origins=yes
---11813--    --verbose
---11813--    --log-file=valgrind-out.txt
---11813-- Contents of /proc/version:
---11813--   Linux version 4.19.0-9-amd64 (debian-kernel@lists.debian.org) (gcc version 8.3.0 (Debian 8.3.0-6)) #1 SMP Debian 4.19.118-2 (2020-04-29)
---11813-- 
---11813-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2
---11813-- Page sizes: currently 4096, max supported 4096
---11813-- Valgrind library directory: /usr/lib/x86_64-linux-gnu/valgrind
---11813-- Reading syms from /home/cab403/Desktop/a1/overseer
---11813-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-2.28.so
---11813--   Considering /usr/lib/debug/.build-id/f2/5dfd7b95be4ba386fd71080accae8c0732b711.debug ..
---11813--   .. build-id is valid
---11813-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/memcheck-amd64-linux
---11813--    object doesn't have a symbol table
---11813--    object doesn't have a dynamic symbol table
---11813-- Scheduler: using generic scheduler lock implementation.
---11813-- Reading suppressions file: /usr/lib/x86_64-linux-gnu/valgrind/default.supp
-==11813== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-11813-by-cab403-on-???
-==11813== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-11813-by-cab403-on-???
-==11813== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-11813-by-cab403-on-???
-==11813== 
-==11813== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==11813== don't want to do, unless you know exactly what you're doing,
-==11813== or are doing some strange experiment):
-==11813==   /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=11813 ...command...
-==11813== 
-==11813== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==11813==   /path/to/gdb ./overseer
-==11813== and then give GDB the following command
-==11813==   target remote | /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=11813
-==11813== --pid is optional if only one valgrind process is running
-==11813== 
---11813-- REDIR: 0x401e2f0 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c9ce2 (???)
---11813-- REDIR: 0x401e0d0 (ld-linux-x86-64.so.2:index) redirected to 0x580c9cfc (???)
---11813-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_core-amd64-linux.so
---11813--    object doesn't have a symbol table
---11813-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so
---11813--    object doesn't have a symbol table
-==11813== WARNING: new redirection conflicts with existing -- ignoring it
---11813--     old: 0x0401e2f0 (strlen              ) R-> (0000.0) 0x580c9ce2 ???
---11813--     new: 0x0401e2f0 (strlen              ) R-> (2007.0) 0x04838d80 strlen
---11813-- REDIR: 0x401ab10 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4839e40 (strcmp)
---11813-- REDIR: 0x401e830 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x483d860 (mempcpy)
---11813-- Reading syms from /usr/lib/x86_64-linux-gnu/libpthread-2.28.so
---11813--   Considering /usr/lib/debug/.build-id/e9/1114987a0147bd050addbd591eb8994b29f4b3.debug ..
---11813--   .. build-id is valid
---11813-- Reading syms from /usr/lib/x86_64-linux-gnu/libc-2.28.so
---11813--   Considering /usr/lib/debug/.build-id/18/b9a9a8c523e5cfe5b5d946d605d09242f09798.debug ..
---11813--   .. build-id is valid
---11813-- REDIR: 0x4906f70 (libc.so.6:memmove) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906160 (libc.so.6:strncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4907250 (libc.so.6:strcasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4905b70 (libc.so.6:strcat) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906190 (libc.so.6:rindex) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4908890 (libc.so.6:rawmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4921230 (libc.so.6:wmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4920cd0 (libc.so.6:wcscmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49070e0 (libc.so.6:mempcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906f10 (libc.so.6:bcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906100 (libc.so.6:strncmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4905be0 (libc.so.6:strcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4907040 (libc.so.6:memset) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4920ca0 (libc.so.6:wcschr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49060a0 (libc.so.6:strnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4905c70 (libc.so.6:strcspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49072a0 (libc.so.6:strncasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4905c40 (libc.so.6:strcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49073e0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49224d0 (libc.so.6:wcsnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49061c0 (libc.so.6:strpbrk) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4905ba0 (libc.so.6:index) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906070 (libc.so.6:strlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x490d280 (libc.so.6:memrchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49072f0 (libc.so.6:strcasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906ee0 (libc.so.6:memchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4920db0 (libc.so.6:wcslen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4906460 (libc.so.6:strspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4907220 (libc.so.6:stpncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49071f0 (libc.so.6:stpcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49088c0 (libc.so.6:strchrnul) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x4907340 (libc.so.6:strncasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---11813-- REDIR: 0x49d9fa0 (libc.so.6:__strrchr_avx2) redirected to 0x4838790 (rindex)
---11813-- REDIR: 0x4903120 (libc.so.6:calloc) redirected to 0x4837ab0 (calloc)
---11813-- REDIR: 0x49dab30 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x483c790 (memset)
-==11813== Warning: ignored attempt to set SIGKILL handler in sigaction();
-==11813==          the SIGKILL signal is uncatchable
---11813-- REDIR: 0x49d9db0 (libc.so.6:__strchrnul_avx2) redirected to 0x483d390 (strchrnul)
---11813-- REDIR: 0x49da170 (libc.so.6:__strlen_avx2) redirected to 0x4838c60 (strlen)
---11813-- REDIR: 0x49029a0 (libc.so.6:free) redirected to 0x4836940 (free)
---11813-- REDIR: 0x4902350 (libc.so.6:malloc) redirected to 0x4835710 (malloc)
---11813-- REDIR: 0x49da6b0 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x483c8a0 (memmove)
---11813-- REDIR: 0x4906980 (libc.so.6:__GI_strstr) redirected to 0x483dac0 (__strstr_sse2)
---11813-- REDIR: 0x49d6780 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x483c060 (bcmp)
---11813-- REDIR: 0x49d62d0 (libc.so.6:__rawmemchr_avx2) redirected to 0x483d3c0 (rawmemchr)
---11813-- REDIR: 0x49da690 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x483d4a0 (mempcpy)
---11813-- REDIR: 0x491b100 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4838db0 (strcpy)
---11820-- REDIR: 0x49d5580 (libc.so.6:__strspn_sse42) redirected to 0x483dcc0 (strspn)
---11820-- REDIR: 0x49d52c0 (libc.so.6:__strcspn_sse42) redirected to 0x483dc00 (strcspn)
-==11820== Thread 4:
-==11820== Invalid write of size 1
-==11820==    at 0x4838DD7: strcpy (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BD02: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11820==  Address 0x5245325 is 0 bytes after a block of size 5 alloc'd
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BCD9: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11820== 
-==11821== Syscall param execve(filename) points to unaddressable byte(s)
-==11821==    at 0x4944A07: execve (syscall-template.S:78)
-==11821==    by 0x10B6F6: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11821==    by 0x49774CE: clone (clone.S:95)
-==11821==  Address 0x5245325 is 0 bytes after a block of size 5 alloc'd
-==11821==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11821==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10BCD9: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11821==    by 0x49774CE: clone (clone.S:95)
-==11821== 
-==11821== Syscall param execve(argv[i]) points to unaddressable byte(s)
-==11821==    at 0x4944A07: execve (syscall-template.S:78)
-==11821==    by 0x10B6F6: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11821==    by 0x49774CE: clone (clone.S:95)
-==11821==  Address 0x5245325 is 0 bytes after a block of size 5 alloc'd
-==11821==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11821==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10BCD9: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11821==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11821==    by 0x49774CE: clone (clone.S:95)
-==11821== 
---11813-- REDIR: 0x49d6000 (libc.so.6:__memchr_avx2) redirected to 0x4839ee0 (memchr)
-==11813== 
-==11813== Process terminating with default action of signal 2 (SIGINT)
-==11820== 
-==11820== Process terminating with default action of signal 2 (SIGINT)
-==11813==    at 0x486E667: accept (accept.c:26)
-==11820==    at 0x486F0CA: waitpid (waitpid.c:30)
-==11813==    by 0x10AB77: main (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B8A5: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11813== 
-==11813== HEAP SUMMARY:
-==11813==     in use at exit: 3,307 bytes in 19 blocks
-==11813==   total heap usage: 34 allocs, 15 frees, 12,447 bytes allocated
-==11813== 
-==11813== Searching for pointers to 19 not-freed blocks
-==11820== 
-==11820== HEAP SUMMARY:
-==11820==     in use at exit: 440 bytes in 9 blocks
-==11820==   total heap usage: 22 allocs, 13 frees, 7,551 bytes allocated
-==11820== 
-==11820== Searching for pointers to 9 not-freed blocks
-==11820== Checked 8,476,920 bytes
-==11820== 
-==11820== Thread 1:
-==11820== 9 bytes in 2 blocks are still reachable in loss record 1 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BCD9: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11820== 
-==11820== 11 bytes in 1 blocks are still reachable in loss record 2 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BFFD: save_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
-==11820== 
-==11820== 20 bytes in 1 blocks are still reachable in loss record 3 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10A6EA: receive_options (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
-==11820== 
-==11820== 24 bytes in 1 blocks are still reachable in loss record 4 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BFD3: save_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
-==11820== 
-==11820== 24 bytes in 1 blocks are still reachable in loss record 5 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B446: add_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10AFCD: main (in /home/cab403/Desktop/a1/overseer)
-==11820== 
-==11820== 24 bytes in 1 blocks are still reachable in loss record 6 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BC89: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11820== 
-==11820== 56 bytes in 1 blocks are still reachable in loss record 7 of 8
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10A4C2: receive_options (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
-==11820== 
-==11820== 272 bytes in 1 blocks are possibly lost in loss record 8 of 8
-==11820==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==11820==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==11820==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==11820==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==11820==    by 0x10BB9A: init_threads (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10AA31: main (in /home/cab403/Desktop/a1/overseer)
-==11820== 
-==11820== LEAK SUMMARY:
-==11820==    definitely lost: 0 bytes in 0 blocks
-==11820==    indirectly lost: 0 bytes in 0 blocks
-==11820==      possibly lost: 272 bytes in 1 blocks
-==11820==    still reachable: 168 bytes in 8 blocks
-==11820==         suppressed: 0 bytes in 0 blocks
-==11820== 
-==11820== ERROR SUMMARY: 3 errors from 2 contexts (suppressed: 0 from 0)
-==11820== 
-==11820== 2 errors in context 1 of 2:
-==11820== Thread 4:
-==11820== Invalid write of size 1
-==11820==    at 0x4838DD7: strcpy (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BD02: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11820==  Address 0x5245325 is 0 bytes after a block of size 5 alloc'd
-==11820==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11820==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BCD9: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11820==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11820==    by 0x49774CE: clone (clone.S:95)
-==11820== 
-==11820== ERROR SUMMARY: 3 errors from 2 contexts (suppressed: 0 from 0)
-==11813== Checked 42,031,240 bytes
-==11813== 
-==11813== 11 bytes in 1 blocks are still reachable in loss record 1 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BFFD: save_request (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
-==11813== 
-==11813== 20 bytes in 1 blocks are still reachable in loss record 2 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10A6EA: receive_options (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
-==11813== 
-==11813== 24 bytes in 1 blocks are still reachable in loss record 3 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BFD3: save_request (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
-==11813== 
-==11813== 24 bytes in 1 blocks are still reachable in loss record 4 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10B446: add_request (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10AFCD: main (in /home/cab403/Desktop/a1/overseer)
-==11813== 
-==11813== 56 bytes in 1 blocks are still reachable in loss record 5 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10A4C2: receive_options (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
-==11813== 
-==11813== 60 bytes in 3 blocks are still reachable in loss record 6 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10B19A: get_formatted_time (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BF88: request_add_entry (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BA25: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11813==    by 0x49774CE: clone (clone.S:95)
-==11813== 
-==11813== 96 bytes in 3 blocks are still reachable in loss record 7 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x10BE24: exMalloc (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BF54: request_add_entry (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BA25: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11813==    by 0x49774CE: clone (clone.S:95)
-==11813== 
-==11813== 1,360 bytes in 5 blocks are possibly lost in loss record 8 of 9
-==11813==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==11813==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==11813==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==11813==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==11813==    by 0x10BB9A: init_threads (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10AA31: main (in /home/cab403/Desktop/a1/overseer)
-==11813== 
-==11813== 1,656 bytes in 3 blocks are still reachable in loss record 9 of 9
-==11813==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11813==    by 0x48EE0FA: __fopen_internal (iofopen.c:65)
-==11813==    by 0x10BE7E: get_mem_for_pid (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BF75: request_add_entry (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BA25: handle_request (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
-==11813==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11813==    by 0x49774CE: clone (clone.S:95)
-==11813== 
-==11813== LEAK SUMMARY:
-==11813==    definitely lost: 0 bytes in 0 blocks
-==11813==    indirectly lost: 0 bytes in 0 blocks
-==11813==      possibly lost: 1,360 bytes in 5 blocks
-==11813==    still reachable: 1,947 bytes in 14 blocks
-==11813==         suppressed: 0 bytes in 0 blocks
-==11813== 
-==11813== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-==11813== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==12427== Memcheck, a memory error detector
+==12427== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==12427== Using Valgrind-3.14.0-353a3587bb-20181007X and LibVEX; rerun with -h for copyright info
+==12427== Command: ./overseer 3000
+==12427== Parent PID: 3665
+==12427== 
+--12427-- 
+--12427-- Valgrind options:
+--12427--    --leak-check=full
+--12427--    --show-leak-kinds=all
+--12427--    --track-origins=yes
+--12427--    --verbose
+--12427--    --log-file=valgrind-out.txt
+--12427-- Contents of /proc/version:
+--12427--   Linux version 4.19.0-9-amd64 (debian-kernel@lists.debian.org) (gcc version 8.3.0 (Debian 8.3.0-6)) #1 SMP Debian 4.19.118-2 (2020-04-29)
+--12427-- 
+--12427-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2
+--12427-- Page sizes: currently 4096, max supported 4096
+--12427-- Valgrind library directory: /usr/lib/x86_64-linux-gnu/valgrind
+--12427-- Reading syms from /home/cab403/Desktop/a1/overseer
+--12427-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-2.28.so
+--12427--   Considering /usr/lib/debug/.build-id/f2/5dfd7b95be4ba386fd71080accae8c0732b711.debug ..
+--12427--   .. build-id is valid
+--12427-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/memcheck-amd64-linux
+--12427--    object doesn't have a symbol table
+--12427--    object doesn't have a dynamic symbol table
+--12427-- Scheduler: using generic scheduler lock implementation.
+--12427-- Reading suppressions file: /usr/lib/x86_64-linux-gnu/valgrind/default.supp
+==12427== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-12427-by-cab403-on-???
+==12427== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-12427-by-cab403-on-???
+==12427== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-12427-by-cab403-on-???
+==12427== 
+==12427== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==12427== don't want to do, unless you know exactly what you're doing,
+==12427== or are doing some strange experiment):
+==12427==   /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=12427 ...command...
+==12427== 
+==12427== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==12427==   /path/to/gdb ./overseer
+==12427== and then give GDB the following command
+==12427==   target remote | /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=12427
+==12427== --pid is optional if only one valgrind process is running
+==12427== 
+--12427-- REDIR: 0x401e2f0 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c9ce2 (???)
+--12427-- REDIR: 0x401e0d0 (ld-linux-x86-64.so.2:index) redirected to 0x580c9cfc (???)
+--12427-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_core-amd64-linux.so
+--12427--    object doesn't have a symbol table
+--12427-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so
+--12427--    object doesn't have a symbol table
+==12427== WARNING: new redirection conflicts with existing -- ignoring it
+--12427--     old: 0x0401e2f0 (strlen              ) R-> (0000.0) 0x580c9ce2 ???
+--12427--     new: 0x0401e2f0 (strlen              ) R-> (2007.0) 0x04838d80 strlen
+--12427-- REDIR: 0x401ab10 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4839e40 (strcmp)
+--12427-- REDIR: 0x401e830 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x483d860 (mempcpy)
+--12427-- Reading syms from /usr/lib/x86_64-linux-gnu/libpthread-2.28.so
+--12427--   Considering /usr/lib/debug/.build-id/e9/1114987a0147bd050addbd591eb8994b29f4b3.debug ..
+--12427--   .. build-id is valid
+--12427-- Reading syms from /usr/lib/x86_64-linux-gnu/libc-2.28.so
+--12427--   Considering /usr/lib/debug/.build-id/18/b9a9a8c523e5cfe5b5d946d605d09242f09798.debug ..
+--12427--   .. build-id is valid
+--12427-- REDIR: 0x4906f70 (libc.so.6:memmove) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906160 (libc.so.6:strncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4907250 (libc.so.6:strcasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4905b70 (libc.so.6:strcat) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906190 (libc.so.6:rindex) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4908890 (libc.so.6:rawmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4921230 (libc.so.6:wmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4920cd0 (libc.so.6:wcscmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49070e0 (libc.so.6:mempcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906f10 (libc.so.6:bcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906100 (libc.so.6:strncmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4905be0 (libc.so.6:strcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4907040 (libc.so.6:memset) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4920ca0 (libc.so.6:wcschr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49060a0 (libc.so.6:strnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4905c70 (libc.so.6:strcspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49072a0 (libc.so.6:strncasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4905c40 (libc.so.6:strcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49073e0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49224d0 (libc.so.6:wcsnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49061c0 (libc.so.6:strpbrk) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4905ba0 (libc.so.6:index) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906070 (libc.so.6:strlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x490d280 (libc.so.6:memrchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49072f0 (libc.so.6:strcasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906ee0 (libc.so.6:memchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4920db0 (libc.so.6:wcslen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4906460 (libc.so.6:strspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4907220 (libc.so.6:stpncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49071f0 (libc.so.6:stpcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49088c0 (libc.so.6:strchrnul) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x4907340 (libc.so.6:strncasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--12427-- REDIR: 0x49d9fa0 (libc.so.6:__strrchr_avx2) redirected to 0x4838790 (rindex)
+--12427-- REDIR: 0x4903120 (libc.so.6:calloc) redirected to 0x4837ab0 (calloc)
+--12427-- REDIR: 0x49dab30 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x483c790 (memset)
+==12427== Warning: ignored attempt to set SIGKILL handler in sigaction();
+==12427==          the SIGKILL signal is uncatchable
+--12427-- REDIR: 0x49d9db0 (libc.so.6:__strchrnul_avx2) redirected to 0x483d390 (strchrnul)
+--12427-- REDIR: 0x49da170 (libc.so.6:__strlen_avx2) redirected to 0x4838c60 (strlen)
+--12427-- REDIR: 0x49029a0 (libc.so.6:free) redirected to 0x4836940 (free)
+--12427-- REDIR: 0x4902350 (libc.so.6:malloc) redirected to 0x4835710 (malloc)
+--12427-- REDIR: 0x49da6b0 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x483c8a0 (memmove)
+--12427-- REDIR: 0x4906980 (libc.so.6:__GI_strstr) redirected to 0x483dac0 (__strstr_sse2)
+--12427-- REDIR: 0x49d6780 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x483c060 (bcmp)
+--12427-- REDIR: 0x49d62d0 (libc.so.6:__rawmemchr_avx2) redirected to 0x483d3c0 (rawmemchr)
+--12427-- REDIR: 0x49da690 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x483d4a0 (mempcpy)
+--12427-- REDIR: 0x491b100 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4838db0 (strcpy)
+--12435-- REDIR: 0x49d5580 (libc.so.6:__strspn_sse42) redirected to 0x483dcc0 (strspn)
+--12435-- REDIR: 0x49d52c0 (libc.so.6:__strcspn_sse42) redirected to 0x483dc00 (strcspn)
+--12427-- REDIR: 0x49d6000 (libc.so.6:__memchr_avx2) redirected to 0x4839ee0 (memchr)
+==12435== 
+==12435== Process terminating with default action of signal 2 (SIGINT)
+==12427== 
+==12427== Process terminating with default action of signal 2 (SIGINT)
+==12435==    at 0x486F0CA: waitpid (waitpid.c:30)
+==12427==    at 0x486E667: accept (accept.c:26)
+==12435==    by 0x10B8A5: handle_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10AB77: main (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x4864FA2: start_thread (pthread_create.c:486)
+==12435==    by 0x49774CE: clone (clone.S:95)
+==12427== 
+==12427== HEAP SUMMARY:
+==12427==     in use at exit: 2,703 bytes in 16 blocks
+==12427==   total heap usage: 29 allocs, 13 frees, 10,804 bytes allocated
+==12427== 
+==12427== Searching for pointers to 16 not-freed blocks
+==12435== 
+==12435== HEAP SUMMARY:
+==12435==     in use at exit: 449 bytes in 9 blocks
+==12435==   total heap usage: 22 allocs, 13 frees, 7,560 bytes allocated
+==12435== 
+==12435== Searching for pointers to 9 not-freed blocks
+==12435== Checked 8,476,920 bytes
+==12435== 
+==12435== 11 bytes in 1 blocks are still reachable in loss record 1 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10C002: save_request (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
+==12435== 
+==12435== 18 bytes in 2 blocks are still reachable in loss record 2 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10BCDE: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x4864FA2: start_thread (pthread_create.c:486)
+==12435==    by 0x49774CE: clone (clone.S:95)
+==12435== 
+==12435== 20 bytes in 1 blocks are still reachable in loss record 3 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10A6EA: receive_options (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
+==12435== 
+==12435== 24 bytes in 1 blocks are still reachable in loss record 4 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10BFD8: save_request (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
+==12435== 
+==12435== 24 bytes in 1 blocks are still reachable in loss record 5 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10B446: add_request (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10AFCD: main (in /home/cab403/Desktop/a1/overseer)
+==12435== 
+==12435== 24 bytes in 1 blocks are still reachable in loss record 6 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10BC8D: split_string_by_space (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10B60E: handle_request (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x4864FA2: start_thread (pthread_create.c:486)
+==12435==    by 0x49774CE: clone (clone.S:95)
+==12435== 
+==12435== 56 bytes in 1 blocks are still reachable in loss record 7 of 8
+==12435==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10A4C2: receive_options (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
+==12435== 
+==12435== 272 bytes in 1 blocks are possibly lost in loss record 8 of 8
+==12435==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12435==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
+==12435==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
+==12435==    by 0x4865B95: allocate_stack (allocatestack.c:621)
+==12435==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
+==12435==    by 0x10BB9A: init_threads (in /home/cab403/Desktop/a1/overseer)
+==12435==    by 0x10AA31: main (in /home/cab403/Desktop/a1/overseer)
+==12435== 
+==12435== LEAK SUMMARY:
+==12435==    definitely lost: 0 bytes in 0 blocks
+==12435==    indirectly lost: 0 bytes in 0 blocks
+==12435==      possibly lost: 272 bytes in 1 blocks
+==12435==    still reachable: 177 bytes in 8 blocks
+==12435==         suppressed: 0 bytes in 0 blocks
+==12435== 
+==12435== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==12435== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==12427== Checked 42,030,928 bytes
+==12427== 
+==12427== 11 bytes in 1 blocks are still reachable in loss record 1 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10C002: save_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
+==12427== 
+==12427== 20 bytes in 1 blocks are still reachable in loss record 2 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10A6EA: receive_options (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
+==12427== 
+==12427== 24 bytes in 1 blocks are still reachable in loss record 3 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BFD8: save_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10AFAA: main (in /home/cab403/Desktop/a1/overseer)
+==12427== 
+==12427== 24 bytes in 1 blocks are still reachable in loss record 4 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10B446: add_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10AFCD: main (in /home/cab403/Desktop/a1/overseer)
+==12427== 
+==12427== 40 bytes in 2 blocks are still reachable in loss record 5 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10B19A: get_formatted_time (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BF8D: request_add_entry (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BA25: handle_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x4864FA2: start_thread (pthread_create.c:486)
+==12427==    by 0x49774CE: clone (clone.S:95)
+==12427== 
+==12427== 56 bytes in 1 blocks are still reachable in loss record 6 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10A4C2: receive_options (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10ABE5: main (in /home/cab403/Desktop/a1/overseer)
+==12427== 
+==12427== 64 bytes in 2 blocks are still reachable in loss record 7 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x10BE29: exMalloc (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BF59: request_add_entry (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BA25: handle_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x4864FA2: start_thread (pthread_create.c:486)
+==12427==    by 0x49774CE: clone (clone.S:95)
+==12427== 
+==12427== 1,104 bytes in 2 blocks are still reachable in loss record 8 of 9
+==12427==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x48EE0FA: __fopen_internal (iofopen.c:65)
+==12427==    by 0x10BE83: get_mem_for_pid (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BF7A: request_add_entry (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BA25: handle_request (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10BB08: handle_requests_loop (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x4864FA2: start_thread (pthread_create.c:486)
+==12427==    by 0x49774CE: clone (clone.S:95)
+==12427== 
+==12427== 1,360 bytes in 5 blocks are possibly lost in loss record 9 of 9
+==12427==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==12427==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
+==12427==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
+==12427==    by 0x4865B95: allocate_stack (allocatestack.c:621)
+==12427==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
+==12427==    by 0x10BB9A: init_threads (in /home/cab403/Desktop/a1/overseer)
+==12427==    by 0x10AA31: main (in /home/cab403/Desktop/a1/overseer)
+==12427== 
+==12427== LEAK SUMMARY:
+==12427==    definitely lost: 0 bytes in 0 blocks
+==12427==    indirectly lost: 0 bytes in 0 blocks
+==12427==      possibly lost: 1,360 bytes in 5 blocks
+==12427==    still reachable: 1,343 bytes in 11 blocks
+==12427==         suppressed: 0 bytes in 0 blocks
+==12427== 
+==12427== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==12427== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
