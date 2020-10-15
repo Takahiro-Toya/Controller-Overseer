@@ -59,17 +59,10 @@ int save_request(char *file_args)
     new->file_args = (char *)exMalloc(sizeof(char) * (len + 1));
     strcpy(new->file_args, file_args);
     new->request_id = current_id;
-    // if (saved_head == NULL)
-    // {
-    //     saved_head = exMalloc(sizeof(saved_request_t));
-    //     new->next = NULL;
-    //     saved_head = new;
-    // }
-    // else
-    // {
-        new->next = saved_head;
-        saved_head = new;
-    // }
+
+    new->next = saved_head;
+    saved_head = new;
+
     return current_id;
 }
 

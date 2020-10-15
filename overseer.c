@@ -75,14 +75,17 @@ options_server_t *receive_options(int socket_id)
         exRecv(socket_id, &recved, sizeof(uint16_t), 0);
         hsizeint = ntohs(recved);
         // malloc for filename
-        op->execCommand = (char *)exMalloc(sizeof(char) * hsizeint);
+        op->execCommand = (char *)exMalloc((sizeof(char) + 1) * hsizeint);
         // receive number of arguments
         exRecv(socket_id, &recved, sizeof(uint16_t), 0);
         op->execArgc = ntohs(recved);
         // receive commands
         numBytes = exRecv(socket_id, op->execCommand, sizeof(char) * hsizeint, 0);
         op->execCommand[numBytes] = '\0';
-
+        printf("hsizeint = %d\n", hsizeint);
+        printf("sizeof = %d\n", sizeof(op->execCommand));
+        printf("numBytes = %d\n", numBytes);
+        printf("command = %s\n", op->execCommand);
         // receive -o header
         exRecv(socket_id, &recved, sizeof(uint16_t), 0);
         hsizeint = ntohs(recved);
@@ -90,7 +93,7 @@ options_server_t *receive_options(int socket_id)
         if (hsizeint != 0)
         {
             op->useOut = true;
-            op->outfile = (char *)exMalloc(sizeof(char) * hsizeint);
+            op->outfile = (char *)exMalloc((sizeof(char) + 1) * hsizeint);
             numBytes = exRecv(socket_id, op->outfile, sizeof(char) * hsizeint, 0);
             op->outfile[numBytes] = '\0';
         }
@@ -105,7 +108,7 @@ options_server_t *receive_options(int socket_id)
         if (hsizeint != 0)
         {
             op->useLog = true;
-            op->logfile = malloc(sizeof(char) * hsizeint);
+            op->logfile = exMalloc((sizeof(char) + 1) * hsizeint);
             numBytes = exRecv(socket_id, op->logfile, sizeof(char) * hsizeint, 0);
             op->logfile[numBytes] = '\0';
         }
