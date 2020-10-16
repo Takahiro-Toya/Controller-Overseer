@@ -29,8 +29,11 @@ void free_option_container(optionContainer_t *container)
  * free memory of all optionContainer_t from head to last of linked list
  * */
 void free_all_requests(optionContainer_t *requests) {
-    for (optionContainer_t *c = requests; c != NULL; c = c->next) {
-        free_option_container(c);
+    optionContainer_t *toBeDeleted;
+    while (toBeDeleted != NULL) {
+        toBeDeleted = requests;
+        requests = requests->next;
+        free_option_container(toBeDeleted);
     }
 }
 

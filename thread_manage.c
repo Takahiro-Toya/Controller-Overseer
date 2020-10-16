@@ -40,7 +40,6 @@ optionContainer_t *last_request = NULL;
 void add_request(options_server_t *option)
 {
     optionContainer_t *container = (optionContainer_t *)exMalloc(sizeof(optionContainer_t));
-
     pthread_mutex_lock(&request_mutex);
     container->option = option;
     container->next = NULL;
@@ -194,7 +193,7 @@ void handle_request(optionContainer_t *container)
                         alarm(0);
                         signal(SIGALRM, SIG_DFL);
                         kill(exec_pid, SIGKILL);
-                        print_log("- sent SIGKILL to %d\n", exec_pid);
+                        print_log("- sent SIGKILL detachto %d\n", exec_pid);
                     }
                 }
 
@@ -330,35 +329,13 @@ void init_threads()
 void cancel_all_threads()
 {
     clean_requests();
+    free_all_requests(requests);
+    free(last_request);
     for (int i = 0; i < NUM_THREADS; i++)
     {
         pthread_cancel(threads[i]);
     }
+
 }
 
-/*
- * Split string by every space and store them into an array of string
- * Specify the number of split (splitnum) so it won't run 'for loop' twice inside
- * returns the result array
- */
-char **split_string_by_space(char *string, int splitnum)
-{
-    char copy[strlen(string) + 1];
-    strcpy(copy, string);
 
-    char **strarray = (char **)exMalloc(sizeof(char *) * (splitnum + 1));
-    char *p = strtok(copy, " ");
-
-    for (int i = 0; i < splitnum; i++)
-    {
-        strarray[i] = (char *)exMalloc((sizeof(char) + 1) * strlen(p));
-        strcpy(strarray[i], p);
-        p = strtok(NULL, " ");
-    }
-
-    free(p);
-
-    strarray[splitnum] = NULL;
-
-    return strarray;
-}

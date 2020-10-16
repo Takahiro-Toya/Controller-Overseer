@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
             if (!isCompleted) {
                 printf("%d %d %s\n", pid, bytes, args);
             }
+            free(args);
             
         }
         close(sockfd);
@@ -170,11 +171,16 @@ int main(int argc, char *argv[])
             printf("%s %d\n", logtime, bytes);
         } 
         close(sockfd);
+        free(options.memkill);
     }
     else
     {
         close(sockfd);
+        free(options.execCommand);
+        free(options.outfile);
+        free(options.logfile);
     }
+
 
     return 0;
 }

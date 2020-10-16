@@ -82,10 +82,6 @@ options_server_t *receive_options(int socket_id)
         // receive commands
         numBytes = exRecv(socket_id, op->execCommand, sizeof(char) * hsizeint, 0);
         op->execCommand[numBytes] = '\0';
-        printf("hsizeint = %d\n", hsizeint);
-        printf("sizeof = %d\n", sizeof(op->execCommand));
-        printf("numBytes = %d\n", numBytes);
-        printf("command = %s\n", op->execCommand);
         // receive -o header
         exRecv(socket_id, &recved, sizeof(uint16_t), 0);
         hsizeint = ntohs(recved);
@@ -289,7 +285,6 @@ int main(int argc, char *argv[])
                     exPerror("sysinfo");
                 }
                 
-                // printf("kill: %lf\n", op->memkill);
                 // kill only if the memory usage are over the threshold
                 if (((double)(e->bytes) / (double)(si.totalram)) >= op->memkill) {
                     kill(e->pid, SIGKILL);

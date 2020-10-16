@@ -48,4 +48,8 @@ void init_threads();
  * */
 void cancel_all_threads();
 
-char **split_string_by_space(char *string, int splitnum);
+/*
+ * clean all requests that is awaiting to be excuted
+ */
+void clean_awaiting_queue();
+
