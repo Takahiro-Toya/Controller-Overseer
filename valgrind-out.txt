@@ -1,678 +1,122 @@
-==10983== Memcheck, a memory error detector
-==10983== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==10983== Using Valgrind-3.14.0-353a3587bb-20181007X and LibVEX; rerun with -h for copyright info
-==10983== Command: ./overseer 3000
-==10983== Parent PID: 4884
-==10983== 
---10983-- 
---10983-- Valgrind options:
---10983--    --leak-check=full
---10983--    --show-leak-kinds=all
---10983--    --track-origins=yes
---10983--    --verbose
---10983--    --log-file=valgrind-out.txt
---10983-- Contents of /proc/version:
---10983--   Linux version 4.19.0-9-amd64 (debian-kernel@lists.debian.org) (gcc version 8.3.0 (Debian 8.3.0-6)) #1 SMP Debian 4.19.118-2 (2020-04-29)
---10983-- 
---10983-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2
---10983-- Page sizes: currently 4096, max supported 4096
---10983-- Valgrind library directory: /usr/lib/x86_64-linux-gnu/valgrind
---10983-- Reading syms from /home/cab403/Controller-Overseer/overseer
---10983-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-2.28.so
---10983--   Considering /usr/lib/debug/.build-id/f2/5dfd7b95be4ba386fd71080accae8c0732b711.debug ..
---10983--   .. build-id is valid
---10983-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/memcheck-amd64-linux
---10983--    object doesn't have a symbol table
---10983--    object doesn't have a dynamic symbol table
---10983-- Scheduler: using generic scheduler lock implementation.
---10983-- Reading suppressions file: /usr/lib/x86_64-linux-gnu/valgrind/default.supp
-==10983== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-10983-by-cab403-on-???
-==10983== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-10983-by-cab403-on-???
-==10983== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-10983-by-cab403-on-???
-==10983== 
-==10983== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==10983== don't want to do, unless you know exactly what you're doing,
-==10983== or are doing some strange experiment):
-==10983==   /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=10983 ...command...
-==10983== 
-==10983== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==10983==   /path/to/gdb ./overseer
-==10983== and then give GDB the following command
-==10983==   target remote | /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=10983
-==10983== --pid is optional if only one valgrind process is running
-==10983== 
---10983-- REDIR: 0x401e2f0 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c9ce2 (???)
---10983-- REDIR: 0x401e0d0 (ld-linux-x86-64.so.2:index) redirected to 0x580c9cfc (???)
---10983-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_core-amd64-linux.so
---10983--    object doesn't have a symbol table
---10983-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so
---10983--    object doesn't have a symbol table
-==10983== WARNING: new redirection conflicts with existing -- ignoring it
---10983--     old: 0x0401e2f0 (strlen              ) R-> (0000.0) 0x580c9ce2 ???
---10983--     new: 0x0401e2f0 (strlen              ) R-> (2007.0) 0x04838d80 strlen
---10983-- REDIR: 0x401ab10 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4839e40 (strcmp)
---10983-- REDIR: 0x401e830 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x483d860 (mempcpy)
---10983-- Reading syms from /usr/lib/x86_64-linux-gnu/libpthread-2.28.so
---10983--   Considering /usr/lib/debug/.build-id/e9/1114987a0147bd050addbd591eb8994b29f4b3.debug ..
---10983--   .. build-id is valid
---10983-- Reading syms from /usr/lib/x86_64-linux-gnu/libc-2.28.so
---10983--   Considering /usr/lib/debug/.build-id/18/b9a9a8c523e5cfe5b5d946d605d09242f09798.debug ..
---10983--   .. build-id is valid
---10983-- REDIR: 0x4906f70 (libc.so.6:memmove) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906160 (libc.so.6:strncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4907250 (libc.so.6:strcasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4905b70 (libc.so.6:strcat) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906190 (libc.so.6:rindex) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4908890 (libc.so.6:rawmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4921230 (libc.so.6:wmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4920cd0 (libc.so.6:wcscmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49070e0 (libc.so.6:mempcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906f10 (libc.so.6:bcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906100 (libc.so.6:strncmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4905be0 (libc.so.6:strcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4907040 (libc.so.6:memset) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4920ca0 (libc.so.6:wcschr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49060a0 (libc.so.6:strnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4905c70 (libc.so.6:strcspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49072a0 (libc.so.6:strncasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4905c40 (libc.so.6:strcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49073e0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49224d0 (libc.so.6:wcsnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49061c0 (libc.so.6:strpbrk) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4905ba0 (libc.so.6:index) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906070 (libc.so.6:strlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x490d280 (libc.so.6:memrchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49072f0 (libc.so.6:strcasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906ee0 (libc.so.6:memchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4920db0 (libc.so.6:wcslen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4906460 (libc.so.6:strspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4907220 (libc.so.6:stpncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49071f0 (libc.so.6:stpcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49088c0 (libc.so.6:strchrnul) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x4907340 (libc.so.6:strncasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
---10983-- REDIR: 0x49d9fa0 (libc.so.6:__strrchr_avx2) redirected to 0x4838790 (rindex)
---10983-- REDIR: 0x4903120 (libc.so.6:calloc) redirected to 0x4837ab0 (calloc)
---10983-- REDIR: 0x49dab30 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x483c790 (memset)
-==10983== Warning: ignored attempt to set SIGKILL handler in sigaction();
-==10983==          the SIGKILL signal is uncatchable
---10983-- REDIR: 0x49d9db0 (libc.so.6:__strchrnul_avx2) redirected to 0x483d390 (strchrnul)
---10983-- REDIR: 0x49da170 (libc.so.6:__strlen_avx2) redirected to 0x4838c60 (strlen)
---10983-- REDIR: 0x49029a0 (libc.so.6:free) redirected to 0x4836940 (free)
---10983-- REDIR: 0x4902350 (libc.so.6:malloc) redirected to 0x4835710 (malloc)
---10983-- REDIR: 0x49da6b0 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x483c8a0 (memmove)
---10983-- REDIR: 0x4906980 (libc.so.6:__GI_strstr) redirected to 0x483dac0 (__strstr_sse2)
---10983-- REDIR: 0x49d6780 (libc.so.6:__memcmp_avx2_movbe) redirected to 0x483c060 (bcmp)
---10983-- REDIR: 0x49d62d0 (libc.so.6:__rawmemchr_avx2) redirected to 0x483d3c0 (rawmemchr)
---10983-- REDIR: 0x49da690 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x483d4a0 (mempcpy)
---10983-- REDIR: 0x491b100 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4838db0 (strcpy)
---11053-- REDIR: 0x49d5580 (libc.so.6:__strspn_sse42) redirected to 0x483dcc0 (strspn)
---11053-- REDIR: 0x49d52c0 (libc.so.6:__strcspn_sse42) redirected to 0x483dc00 (strcspn)
---10983-- REDIR: 0x49d6000 (libc.so.6:__memchr_avx2) redirected to 0x4839ee0 (memchr)
---11056-- REDIR: 0x49d5580 (libc.so.6:__strspn_sse42) redirected to 0x483dcc0 (strspn)
---11056-- REDIR: 0x49d52c0 (libc.so.6:__strcspn_sse42) redirected to 0x483dc00 (strcspn)
---11060-- REDIR: 0x49d5580 (libc.so.6:__strspn_sse42) redirected to 0x483dcc0 (strspn)
---11060-- REDIR: 0x49d52c0 (libc.so.6:__strcspn_sse42) redirected to 0x483dc00 (strcspn)
---11064-- REDIR: 0x49d5580 (libc.so.6:__strspn_sse42) redirected to 0x483dcc0 (strspn)
---11064-- REDIR: 0x49d52c0 (libc.so.6:__strcspn_sse42) redirected to 0x483dc00 (strcspn)
-==11053== 
-==11053== Process terminating with default action of signal 2 (SIGINT)
-==10983== 
-==10983== Process terminating with default action of signal 2 (SIGINT)
-==11056== 
-==11056== Process terminating with default action of signal 2 (SIGINT)
-==11053==    at 0x486F0CA: waitpid (waitpid.c:30)
-==10983==    at 0x486E667: accept (accept.c:26)
-==11053==    by 0x10B9BB: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== Process terminating with default action of signal 2 (SIGINT)
-==11056==    at 0x486F0CA: waitpid (waitpid.c:30)
-==10983==    by 0x10AB19: main (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B9BB: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11056==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11064==    at 0x486F0CA: waitpid (waitpid.c:30)
-==11053==    by 0x49774CE: clone (clone.S:95)
-==11056==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x10B9BB: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x49774CE: clone (clone.S:95)
-==11064==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x49774CE: clone (clone.S:95)
-==11060== 
-==11060== Process terminating with default action of signal 2 (SIGINT)
-==11060==    at 0x486F0CA: waitpid (waitpid.c:30)
-==11060==    by 0x10B9BB: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11060==    by 0x49774CE: clone (clone.S:95)
-==10983== 
-==10983== HEAP SUMMARY:
-==10983==     in use at exit: 8,935 bytes in 59 blocks
-==10983==   total heap usage: 96 allocs, 37 frees, 26,438 bytes allocated
-==10983== 
-==10983== Searching for pointers to 59 not-freed blocks
-==11064== 
-==11064== HEAP SUMMARY:
-==11064==     in use at exit: 6,273 bytes in 60 blocks
-==11064==   total heap usage: 95 allocs, 35 frees, 21,747 bytes allocated
-==11064== 
-==11064== Searching for pointers to 60 not-freed blocks
-==11053== 
-==11053== HEAP SUMMARY:
-==11053==     in use at exit: 733 bytes in 18 blocks
-==11053==   total heap usage: 31 allocs, 13 frees, 7,844 bytes allocated
-==11053== 
-==11053== Searching for pointers to 18 not-freed blocks
-==11064== Checked 8,479,832 bytes
-==11064== 
-==11064== 16 bytes in 1 blocks are still reachable in loss record 1 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10A843: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 24 bytes in 1 blocks are still reachable in loss record 2 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 56 bytes in 1 blocks are still reachable in loss record 3 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 96 bytes in 4 blocks are still reachable in loss record 4 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BF98: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 112 bytes in 1 blocks are still reachable in loss record 5 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10B3B2: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x49774CE: clone (clone.S:95)
-==11064== 
-==11064== 126 bytes in 13 blocks are still reachable in loss record 6 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10B403: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x49774CE: clone (clone.S:95)
-==11064== 
-==11064== 150 bytes in 1 blocks are still reachable in loss record 7 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 160 bytes in 8 blocks are still reachable in loss record 8 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10B13C: get_formatted_time (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BF4D: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x49774CE: clone (clone.S:95)
-==11064== 
-==11064== 168 bytes in 3 blocks are indirectly lost in loss record 9 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 169 bytes in 4 blocks are still reachable in loss record 10 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BFC2: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 180 bytes in 3 blocks are indirectly lost in loss record 11 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 256 bytes in 8 blocks are still reachable in loss record 12 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BF19: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x49774CE: clone (clone.S:95)
-==11064== 
-==11064== 272 bytes in 1 blocks are possibly lost in loss record 13 of 15
-==11064==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==11064==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==11064==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==11064==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==11064==    by 0x10BCB0: init_threads (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10A9D3: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 420 (72 direct, 348 indirect) bytes in 3 blocks are definitely lost in loss record 14 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11064== 
-==11064== 4,416 bytes in 8 blocks are still reachable in loss record 15 of 15
-==11064==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11064==    by 0x48EE0FA: __fopen_internal (iofopen.c:65)
-==11064==    by 0x10BE43: get_mem_for_pid (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BF3A: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11064==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11064==    by 0x49774CE: clone (clone.S:95)
-==11064== 
-==11064== LEAK SUMMARY:
-==11064==    definitely lost: 72 bytes in 3 blocks
-==11064==    indirectly lost: 348 bytes in 6 blocks
-==11064==      possibly lost: 272 bytes in 1 blocks
-==11064==    still reachable: 5,581 bytes in 50 blocks
-==11064==         suppressed: 0 bytes in 0 blocks
-==11064== 
-==11064== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-==11064== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-==11060== 
-==11060== HEAP SUMMARY:
-==11060==     in use at exit: 2,743 bytes in 31 blocks
-==11060==   total heap usage: 54 allocs, 23 frees, 13,005 bytes allocated
-==11060== 
-==11060== Searching for pointers to 31 not-freed blocks
-==11056== 
-==11056== HEAP SUMMARY:
-==11056==     in use at exit: 1,379 bytes in 20 blocks
-==11056==   total heap usage: 37 allocs, 17 frees, 9,546 bytes allocated
-==11056== 
-==11056== Searching for pointers to 20 not-freed blocks
-==11053== Checked 8,477,240 bytes
-==11053== 
-==11053== 24 bytes in 1 blocks are still reachable in loss record 1 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10BF98: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11053== 
-==11053== 24 bytes in 1 blocks are still reachable in loss record 2 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11053== 
-==11053== 56 bytes in 1 blocks are still reachable in loss record 3 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11053== 
-==11053== 57 bytes in 1 blocks are still reachable in loss record 4 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10BFC2: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11053== 
-==11053== 92 bytes in 11 blocks are still reachable in loss record 5 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10B403: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11053==    by 0x49774CE: clone (clone.S:95)
-==11053== 
-==11053== 96 bytes in 1 blocks are still reachable in loss record 6 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10B3B2: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11053==    by 0x49774CE: clone (clone.S:95)
-==11053== 
-==11053== 112 bytes in 1 blocks are still reachable in loss record 7 of 8
-==11053==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11053== 
-==11053== 272 bytes in 1 blocks are possibly lost in loss record 8 of 8
-==11053==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11053==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==11053==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==11053==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==11053==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==11053==    by 0x10BCB0: init_threads (in /home/cab403/Controller-Overseer/overseer)
-==11053==    by 0x10A9D3: main (in /home/cab403/Controller-Overseer/overseer)
-==11053== 
-==11053== LEAK SUMMARY:
-==11053==    definitely lost: 0 bytes in 0 blocks
-==11053==    indirectly lost: 0 bytes in 0 blocks
-==11053==      possibly lost: 272 bytes in 1 blocks
-==11053==    still reachable: 461 bytes in 17 blocks
-==11053==         suppressed: 0 bytes in 0 blocks
-==11053== 
-==11053== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-==11053== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-==11060== Checked 8,478,008 bytes
-==11060== 
-==11060== 24 bytes in 1 blocks are still reachable in loss record 1 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 26 bytes in 5 blocks are still reachable in loss record 2 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10B403: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11060==    by 0x49774CE: clone (clone.S:95)
-==11060== 
-==11060== 34 bytes in 1 blocks are still reachable in loss record 3 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 48 bytes in 1 blocks are still reachable in loss record 4 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10B3B2: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11060==    by 0x49774CE: clone (clone.S:95)
-==11060== 
-==11060== 56 bytes in 1 blocks are still reachable in loss record 5 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 60 bytes in 3 blocks are still reachable in loss record 6 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10B13C: get_formatted_time (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BF4D: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11060==    by 0x49774CE: clone (clone.S:95)
-==11060== 
-==11060== 72 bytes in 3 blocks are still reachable in loss record 7 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BF98: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 93 bytes in 3 blocks are still reachable in loss record 8 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BFC2: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 96 bytes in 3 blocks are still reachable in loss record 9 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BF19: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11060==    by 0x49774CE: clone (clone.S:95)
-==11060== 
-==11060== 112 bytes in 2 blocks are indirectly lost in loss record 10 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 146 bytes in 2 blocks are indirectly lost in loss record 11 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 272 bytes in 1 blocks are possibly lost in loss record 12 of 14
-==11060==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==11060==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==11060==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==11060==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==11060==    by 0x10BCB0: init_threads (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10A9D3: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 306 (48 direct, 258 indirect) bytes in 2 blocks are definitely lost in loss record 13 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11060== 
-==11060== 1,656 bytes in 3 blocks are still reachable in loss record 14 of 14
-==11060==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11060==    by 0x48EE0FA: __fopen_internal (iofopen.c:65)
-==11060==    by 0x10BE43: get_mem_for_pid (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BF3A: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11060==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11060==    by 0x49774CE: clone (clone.S:95)
-==11060== 
-==11060== LEAK SUMMARY:
-==11060==    definitely lost: 48 bytes in 2 blocks
-==11060==    indirectly lost: 258 bytes in 4 blocks
-==11060==      possibly lost: 272 bytes in 1 blocks
-==11060==    still reachable: 2,165 bytes in 24 blocks
-==11060==         suppressed: 0 bytes in 0 blocks
-==11060== 
-==11060== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-==11060== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-==11056== Checked 8,477,352 bytes
-==11056== 
-==11056== 20 bytes in 1 blocks are still reachable in loss record 1 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10B13C: get_formatted_time (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BF4D: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11056==    by 0x49774CE: clone (clone.S:95)
-==11056== 
-==11056== 24 bytes in 1 blocks are still reachable in loss record 2 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 26 bytes in 5 blocks are still reachable in loss record 3 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B403: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11056==    by 0x49774CE: clone (clone.S:95)
-==11056== 
-==11056== 32 bytes in 1 blocks are still reachable in loss record 4 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BF19: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11056==    by 0x49774CE: clone (clone.S:95)
-==11056== 
-==11056== 34 bytes in 1 blocks are still reachable in loss record 5 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 48 bytes in 1 blocks are still reachable in loss record 6 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B3B2: split_string_by_space (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B724: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11056==    by 0x49774CE: clone (clone.S:95)
-==11056== 
-==11056== 48 bytes in 2 blocks are still reachable in loss record 7 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BF98: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 56 bytes in 1 blocks are still reachable in loss record 8 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 56 bytes in 1 blocks are indirectly lost in loss record 9 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 75 bytes in 2 blocks are still reachable in loss record 10 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BFC2: save_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 112 bytes in 1 blocks are indirectly lost in loss record 11 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 192 (24 direct, 168 indirect) bytes in 1 blocks are definitely lost in loss record 12 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 272 bytes in 1 blocks are possibly lost in loss record 13 of 14
-==11056==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==11056==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==11056==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==11056==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==11056==    by 0x10BCB0: init_threads (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10A9D3: main (in /home/cab403/Controller-Overseer/overseer)
-==11056== 
-==11056== 552 bytes in 1 blocks are still reachable in loss record 14 of 14
-==11056==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==11056==    by 0x48EE0FA: __fopen_internal (iofopen.c:65)
-==11056==    by 0x10BE43: get_mem_for_pid (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BF3A: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==11056==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==11056==    by 0x49774CE: clone (clone.S:95)
-==11056== 
-==11056== LEAK SUMMARY:
-==11056==    definitely lost: 24 bytes in 1 blocks
-==11056==    indirectly lost: 168 bytes in 2 blocks
-==11056==      possibly lost: 272 bytes in 1 blocks
-==11056==    still reachable: 915 bytes in 16 blocks
-==11056==         suppressed: 0 bytes in 0 blocks
-==11056== 
-==11056== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-==11056== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
-==10983== Checked 42,028,112 bytes
-==10983== 
-==10983== 16 bytes in 1 blocks are still reachable in loss record 1 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10A843: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 96 bytes in 4 blocks are still reachable in loss record 2 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BF98: save_request (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 96 bytes in 4 blocks are still reachable in loss record 3 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10B55C: add_request (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10AF6F: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 169 bytes in 4 blocks are still reachable in loss record 4 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BFC2: save_request (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10AF4C: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 220 bytes in 11 blocks are still reachable in loss record 5 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10B13C: get_formatted_time (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BF4D: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==10983==    by 0x49774CE: clone (clone.S:95)
-==10983== 
-==10983== 224 bytes in 4 blocks are still reachable in loss record 6 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10A4C2: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 330 bytes in 4 blocks are still reachable in loss record 7 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10A6EA: receive_options (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10AB87: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 352 bytes in 11 blocks are still reachable in loss record 8 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x10BDE9: exMalloc (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BF19: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==10983==    by 0x49774CE: clone (clone.S:95)
-==10983== 
-==10983== 1,360 bytes in 5 blocks are possibly lost in loss record 9 of 10
-==10983==    at 0x4837B65: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x40116D1: allocate_dtv (dl-tls.c:286)
-==10983==    by 0x401203D: _dl_allocate_tls (dl-tls.c:532)
-==10983==    by 0x4865B95: allocate_stack (allocatestack.c:621)
-==10983==    by 0x4865B95: pthread_create@@GLIBC_2.2.5 (pthread_create.c:669)
-==10983==    by 0x10BCB0: init_threads (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10A9D3: main (in /home/cab403/Controller-Overseer/overseer)
-==10983== 
-==10983== 6,072 bytes in 11 blocks are still reachable in loss record 10 of 10
-==10983==    at 0x483577F: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==10983==    by 0x48EE0FA: __fopen_internal (iofopen.c:65)
-==10983==    by 0x10BE43: get_mem_for_pid (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BF3A: request_add_entry (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BB3B: handle_request (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x10BC1E: handle_requests_loop (in /home/cab403/Controller-Overseer/overseer)
-==10983==    by 0x4864FA2: start_thread (pthread_create.c:486)
-==10983==    by 0x49774CE: clone (clone.S:95)
-==10983== 
-==10983== LEAK SUMMARY:
-==10983==    definitely lost: 0 bytes in 0 blocks
-==10983==    indirectly lost: 0 bytes in 0 blocks
-==10983==      possibly lost: 1,360 bytes in 5 blocks
-==10983==    still reachable: 7,575 bytes in 54 blocks
-==10983==         suppressed: 0 bytes in 0 blocks
-==10983== 
-==10983== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-==10983== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==7848== Memcheck, a memory error detector
+==7848== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==7848== Using Valgrind-3.14.0-353a3587bb-20181007X and LibVEX; rerun with -h for copyright info
+==7848== Command: ./controller localhost 3000 hello person11 person 12 person 13
+==7848== Parent PID: 5151
+==7848== 
+--7848-- 
+--7848-- Valgrind options:
+--7848--    --leak-check=full
+--7848--    --show-leak-kinds=all
+--7848--    --track-origins=yes
+--7848--    --verbose
+--7848--    --log-file=valgrind-out.txt
+--7848-- Contents of /proc/version:
+--7848--   Linux version 4.19.0-9-amd64 (debian-kernel@lists.debian.org) (gcc version 8.3.0 (Debian 8.3.0-6)) #1 SMP Debian 4.19.118-2 (2020-04-29)
+--7848-- 
+--7848-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2
+--7848-- Page sizes: currently 4096, max supported 4096
+--7848-- Valgrind library directory: /usr/lib/x86_64-linux-gnu/valgrind
+--7848-- Reading syms from /home/cab403/Desktop/Controller-Overseer/controller
+--7848-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-2.28.so
+--7848--   Considering /usr/lib/debug/.build-id/f2/5dfd7b95be4ba386fd71080accae8c0732b711.debug ..
+--7848--   .. build-id is valid
+--7848-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/memcheck-amd64-linux
+--7848--    object doesn't have a symbol table
+--7848--    object doesn't have a dynamic symbol table
+--7848-- Scheduler: using generic scheduler lock implementation.
+--7848-- Reading suppressions file: /usr/lib/x86_64-linux-gnu/valgrind/default.supp
+==7848== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-7848-by-cab403-on-???
+==7848== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-7848-by-cab403-on-???
+==7848== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-7848-by-cab403-on-???
+==7848== 
+==7848== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==7848== don't want to do, unless you know exactly what you're doing,
+==7848== or are doing some strange experiment):
+==7848==   /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=7848 ...command...
+==7848== 
+==7848== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==7848==   /path/to/gdb ./controller
+==7848== and then give GDB the following command
+==7848==   target remote | /usr/lib/x86_64-linux-gnu/valgrind/../../bin/vgdb --pid=7848
+==7848== --pid is optional if only one valgrind process is running
+==7848== 
+--7848-- REDIR: 0x401e2f0 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c9ce2 (???)
+--7848-- REDIR: 0x401e0d0 (ld-linux-x86-64.so.2:index) redirected to 0x580c9cfc (???)
+--7848-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_core-amd64-linux.so
+--7848--    object doesn't have a symbol table
+--7848-- Reading syms from /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so
+--7848--    object doesn't have a symbol table
+==7848== WARNING: new redirection conflicts with existing -- ignoring it
+--7848--     old: 0x0401e2f0 (strlen              ) R-> (0000.0) 0x580c9ce2 ???
+--7848--     new: 0x0401e2f0 (strlen              ) R-> (2007.0) 0x04838d80 strlen
+--7848-- REDIR: 0x401ab10 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4839e40 (strcmp)
+--7848-- REDIR: 0x401e830 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x483d860 (mempcpy)
+--7848-- Reading syms from /usr/lib/x86_64-linux-gnu/libc-2.28.so
+--7848--   Considering /usr/lib/debug/.build-id/18/b9a9a8c523e5cfe5b5d946d605d09242f09798.debug ..
+--7848--   .. build-id is valid
+--7848-- REDIR: 0x48e5f70 (libc.so.6:memmove) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5160 (libc.so.6:strncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e6250 (libc.so.6:strcasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e4b70 (libc.so.6:strcat) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5190 (libc.so.6:rindex) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e7890 (libc.so.6:rawmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x4900230 (libc.so.6:wmemchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48ffcd0 (libc.so.6:wcscmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e60e0 (libc.so.6:mempcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5f10 (libc.so.6:bcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5100 (libc.so.6:strncmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e4be0 (libc.so.6:strcmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e6040 (libc.so.6:memset) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48ffca0 (libc.so.6:wcschr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e50a0 (libc.so.6:strnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e4c70 (libc.so.6:strcspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e62a0 (libc.so.6:strncasecmp) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e4c40 (libc.so.6:strcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e63e0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x49014d0 (libc.so.6:wcsnlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e51c0 (libc.so.6:strpbrk) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e4ba0 (libc.so.6:index) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5070 (libc.so.6:strlen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48ec280 (libc.so.6:memrchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e62f0 (libc.so.6:strcasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5ee0 (libc.so.6:memchr) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48ffdb0 (libc.so.6:wcslen) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e5460 (libc.so.6:strspn) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e6220 (libc.so.6:stpncpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e61f0 (libc.so.6:stpcpy) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e78c0 (libc.so.6:strchrnul) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x48e6340 (libc.so.6:strncasecmp_l) redirected to 0x482b1b0 (_vgnU_ifunc_wrapper)
+--7848-- REDIR: 0x49b8fa0 (libc.so.6:__strrchr_avx2) redirected to 0x4838790 (rindex)
+--7848-- REDIR: 0x49b46b0 (libc.so.6:__strcmp_avx2) redirected to 0x4839d00 (strcmp)
+--7848-- REDIR: 0x49b9170 (libc.so.6:__strlen_avx2) redirected to 0x4838c60 (strlen)
+--7848-- REDIR: 0x48e1350 (libc.so.6:malloc) redirected to 0x4835710 (malloc)
+--7848-- REDIR: 0x48fa100 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4838db0 (strcpy)
+--7848-- REDIR: 0x48fd0f0 (libc.so.6:__strcat_sse2_unaligned) redirected to 0x4838940 (strcat)
+--7848-- REDIR: 0x48e2120 (libc.so.6:calloc) redirected to 0x4837ab0 (calloc)
+--7848-- REDIR: 0x48e5980 (libc.so.6:__GI_strstr) redirected to 0x483dac0 (__strstr_sse2)
+--7848-- REDIR: 0x49b5000 (libc.so.6:__memchr_avx2) redirected to 0x4839ee0 (memchr)
+--7848-- REDIR: 0x49b96b0 (libc.so.6:__memcpy_avx_unaligned_erms) redirected to 0x483c8a0 (memmove)
+--7848-- REDIR: 0x49b8db0 (libc.so.6:__strchrnul_avx2) redirected to 0x483d390 (strchrnul)
+--7848-- REDIR: 0x49b71d0 (libc.so.6:__strncasecmp_avx) redirected to 0x4839690 (strncasecmp)
+--7848-- REDIR: 0x48e19a0 (libc.so.6:free) redirected to 0x4836940 (free)
+--7848-- REDIR: 0x49b4af0 (libc.so.6:__strncmp_avx2) redirected to 0x4839410 (strncmp)
+--7848-- REDIR: 0x49b4440 (libc.so.6:__strpbrk_sse42) redirected to 0x483dba0 (strpbrk)
+--7848-- REDIR: 0x49b8b80 (libc.so.6:__strchr_avx2) redirected to 0x4838910 (index)
+--7848-- REDIR: 0x49b9690 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x483d4a0 (mempcpy)
+--7848-- REDIR: 0x48fb710 (libc.so.6:__stpcpy_sse2_unaligned) redirected to 0x483c3f0 (__stpcpy_sse2_unaligned)
+--7848-- Reading syms from /usr/lib/x86_64-linux-gnu/libnss_files-2.28.so
+--7848--   Considering /usr/lib/debug/.build-id/4b/ff8b782e1602c596e856bdef06e642e50e7fa7.debug ..
+--7848--   .. build-id is valid
+--7848-- REDIR: 0x49b5b60 (libc.so.6:__strcasecmp_avx) redirected to 0x48395d0 (strcasecmp)
+--7848-- REDIR: 0x49b9b30 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x483c790 (memset)
+--7848-- Discarding syms at 0x4e24300-0x4e2a578 in /usr/lib/x86_64-linux-gnu/libnss_files-2.28.so (have_dinfo 1)
+==7848== 
+==7848== HEAP SUMMARY:
+==7848==     in use at exit: 0 bytes in 0 blocks
+==7848==   total heap usage: 57 allocs, 57 frees, 23,062 bytes allocated
+==7848== 
+==7848== All heap blocks were freed -- no leaks are possible
+==7848== 
+==7848== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==7848== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

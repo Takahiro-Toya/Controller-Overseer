@@ -30,7 +30,7 @@ void free_option_container(optionContainer_t *container)
  * */
 void free_all_requests(optionContainer_t *requests) {
     optionContainer_t *toBeDeleted;
-    while (toBeDeleted != NULL) {
+    while (requests != NULL) {
         toBeDeleted = requests;
         requests = requests->next;
         free_option_container(toBeDeleted);

@@ -326,14 +326,14 @@ void init_threads()
     }
 }
 
-void cancel_all_threads()
-{
+void cancel_all_threads()   
+{   
     clean_requests();
     free_all_requests(requests);
     free(last_request);
     for (int i = 0; i < NUM_THREADS; i++)
     {
-        pthread_cancel(threads[i]);
+        pthread_detach(threads[i]);
     }
 
 }

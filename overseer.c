@@ -139,7 +139,7 @@ options_server_t *receive_options(int socket_id)
 static jmp_buf env;
 void sigint_handler_o(int sig)
 {
-    siglongjmp(env, 3);
+    siglongjmp(env, 1);
 }
 
 int main(int argc, char *argv[])
@@ -187,9 +187,11 @@ int main(int argc, char *argv[])
         exPerror("listen");
     }
 
-    signal(SIGKILL, sigint_handler_o);
+    
 
     use_fd();
+
+    signal(SIGINT, sigint_handler_o);
 
     /* repeat: accept, send, close the connection */
     /* for every accepted connection, use a sepetate process or thread to serve it */
@@ -203,11 +205,11 @@ int main(int argc, char *argv[])
             perror("accept");
             continue;
         }
-        if (sigsetjmp(env, 3) != 0)
+        if (sigsetjmp(env, 1) != 0)
         {
             cancel_all_threads();
             close(new_fd);
-            break;
+            exit(0);
         }
 
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));

@@ -68,15 +68,11 @@ int save_request(char *file_args)
 
 void clean_requests() {
     saved_request_t *toBeDeleted;
-    while(toBeDeleted != NULL) {
+    while(saved_head != NULL) {
         toBeDeleted = saved_head;
         saved_head = saved_head->next;
         free(toBeDeleted->file_args);
-        free(saved_head);
-    }
-    for (saved_request_t *r = saved_head; r != NULL; r = r->next) {
-        free(r->file_args);
-        free(r);
+        free(toBeDeleted);
     }
 }
 
