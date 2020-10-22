@@ -22,7 +22,7 @@ options_t getControllerInitCommand(int argc, char *argv[])
     options_t op = {FileExec, 1, -1, -1, 1, NULL, NULL, NULL, NULL};
 
     // print usage to stdout
-    if (strcmp(argv[1], "--help") == 0)
+    if (argc > 1 && strcmp(argv[1], "--help") == 0)
     {
         printf("usage: controller <address> <port> {[-o out_file] [-log log_file] [-t seconds] <file> [arg...] | mem [pid] | memkill <percent>}\n");
         op.success = -1;

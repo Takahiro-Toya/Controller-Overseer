@@ -13,6 +13,5 @@ controller: controller.c usage.c helper.c
 clean:
 	rm -f overseer
 	rm -f controller
-	rm -f *.o
 
 .PHONY: clean
