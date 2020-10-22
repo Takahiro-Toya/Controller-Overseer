@@ -53,3 +53,12 @@ void cancel_all_threads();
  */
 void clean_awaiting_queue();
 
+/*
+ * free all request containers stored in the linked list
+ */ 
+void free_all_requests();
+
+/**
+ * free container (like after executing this process)
+ */ 
+void free_option_container(optionContainer_t *container);

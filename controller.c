@@ -175,10 +175,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        close(sockfd);
-        free(options.execCommand);
-        free(options.outfile);
-        free(options.logfile);
+        close(sockfd);        
     }
 
 

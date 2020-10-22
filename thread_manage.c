@@ -12,7 +12,6 @@
 #include "thread_manage.h"
 #include "helper.h"
 #include "output_manage.h"
-#include "memory_manage.h"
 #include "setjmp.h"
 #include "mem_regulation.h"
 
@@ -42,7 +41,7 @@ void add_request(options_server_t *option)
     optionContainer_t *container = (optionContainer_t *)exMalloc(sizeof(optionContainer_t));
     pthread_mutex_lock(&request_mutex);
     container->option = option;
-    container->next = NULL;
+    // container->next = NULL;
     if (option->useOut)
     {
         container->out_fd = get_fd(option->outfile);
@@ -151,11 +150,7 @@ void handle_request(optionContainer_t *container)
                 {
                     dup2(container->out_fd, 1);
                     dup2(1, 2);
-                }
-                // if output redirection is not desired, but due to log output,
-                // put it back to std
-                else if (container->log_fd > 0 && container->out_fd < 0)
-                {
+                } else {
                     force_reset();
                 }
                 // execute
@@ -166,6 +161,8 @@ void handle_request(optionContainer_t *container)
                 if (container->log_fd > 0)
                 {
                     dup2(container->log_fd, 1);
+                } else {
+                    force_reset();
                 }
                 print_log("- could not execute %s\n", op->execCommand);
                 close(sfd[1]);
@@ -328,14 +325,38 @@ void init_threads()
 
 void cancel_all_threads()   
 {   
-    clean_requests();
-    free_all_requests(requests);
-    free(last_request);
+
     for (int i = 0; i < NUM_THREADS; i++)
     {
         pthread_detach(threads[i]);
     }
-
+    free_all_requests();
+    clean_requests();
+    return;
 }
+
+void free_option_container(optionContainer_t *container)
+{
+    if (container->option->useLog) {
+        free(container->option->logfile);
+    }
+    if (container->option->useOut) {
+        free(container->option->outfile);
+    }
+    free(container->option->execCommand);
+    free(container->option);
+    free(container);
+}
+
+
+void free_all_requests() {
+    
+    while (requests != NULL) {
+        optionContainer_t *toBeDeleted = requests;
+        requests = requests->next;
+        free_all_requests(toBeDeleted);
+    }
+}
+
 
 

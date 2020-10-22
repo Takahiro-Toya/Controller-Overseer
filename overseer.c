@@ -21,8 +21,6 @@
 
 #define BACKLOG 10 /* how many pending connections queue will hold */
 
-#define RETURNED_ERROR -1
-
 #define LOGTIME_SIZE 25
 
 
@@ -197,19 +195,19 @@ int main(int argc, char *argv[])
     /* for every accepted connection, use a sepetate process or thread to serve it */
     while (1)
     { /* main accept() loop */
+       if (sigsetjmp(env, 1) != 0)
+        {
 
+            cancel_all_threads();
+            close(new_fd);
+            return EXIT_SUCCESS;
+        }
         sin_size = sizeof(struct sockaddr_in);
         if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
                              &sin_size)) == -1)
         {
             perror("accept");
             continue;
-        }
-        if (sigsetjmp(env, 1) != 0)
-        {
-            cancel_all_threads();
-            close(new_fd);
-            exit(0);
         }
 
         print_log("- Connection received from %s\n", inet_ntoa(their_addr.sin_addr));
